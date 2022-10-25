@@ -49,7 +49,7 @@ public class Member {
 
     public enum MemberStatus {
         MEMBER_ACTIVE,
-        MEMBER_sleep
+        MEMBER_SLEEP
     }
 
 }
