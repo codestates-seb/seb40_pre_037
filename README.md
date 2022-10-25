@@ -1,5 +1,34 @@
 # ver 3.7
 
+<br />
+
+ver 3.7 팀입니다! 아래는 팀원 소개입니다~ 🐥
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center"><a href="https://github.com/haileyport"><img src="https://avatars.githubusercontent.com/u/50188104?v=4" width="100px;" alt=""/><br /><sub><b>Eunhye Jeon</b></sub></a><br /><a href="https://github.com/codestates-seb/seb40_pre_037/commits?author=haileyport" title="Documentation">📖</a> <a href="https://github.com/codestates-seb/seb40_pre_037/pulls?q=is%3Apr+author%3Ahaileyport" title="Pull Requests">🚀</a></td>     
+      <td align="center"><a href="https://github.com/HyeonWooGa"><img src="https://avatars.githubusercontent.com/u/101603474?v=4" width="100px;" alt=""/><br /><sub><b>Yeonwoo Park</b></sub></a><br /><a href="https://github.com/codestates-seb/seb40_pre_037/commits?author=HyeonWooGa" title="Documentation">📖</a> <a href="https://github.com/codestates-seb/seb40_pre_037/pulls?q=is%3Apr+author%3AHyeonWooGa" title="Pull Requests">🚀</a></td>      
+      <td align="center"><a href="https://github.com/z1zonemoi"><img src="https://avatars.githubusercontent.com/u/107454269?v=4" width="100px;" alt=""/><br /><sub><b>
+yujung Choi</b></sub></a><br /><a href="https://github.com/codestates-seb/seb40_pre_037/commits?author=z1zonemoi" title="Documentation">📖</a> <a href="https://github.com/codestates-seb/seb40_pre_037/pulls?q=is%3Apr+author%3Az1zonemoi" title="Pull Requests">🚀</a></td>
+      <td align="center"><a href="https://github.com/94sssh"><img src="https://avatars.githubusercontent.com/u/93918946?v=4" width="100px;" alt=""/><br /><sub><b>SeungHo Han</b></sub></a><br /><a href="https://github.com/codestates-seb/seb40_pre_037/commits?author=94sssh" title="Documentation">📖</a> <a href="https://github.com/codestates-seb/seb40_pre_037/pulls?q=is%3Apr+author%3A94sssh" title="Pull Requests">🚀</a></td>
+    </tr>  
+    <tr>
+      <td align="center"><a href="https://github.com/Shawn9948"><img src="https://avatars.githubusercontent.com/u/104377048?v=4" width="100px;" alt=""/><br /><sub><b>Sion Baek</b></sub></a><br /><a href="https://github.com/codestates-seb/seb40_pre_037/commits?author=Shawn9948" title="Documentation">📖</a> <a href="https://github.com/codestates-seb/seb40_pre_037/pulls?q=is%3Apr+author%3AShawn9948" title="Pull Requests">🚀</a></td>
+      <td align="center"><a href="https://github.com/Quartz614"><img src="https://avatars.githubusercontent.com/u/96826217?v=4" width="100px;" alt=""/><br /><sub><b>Seokyoung joo</b></sub></a><br /><a href="https://github.com/codestates-seb/seb40_pre_037/commits?author=Quartz614" title="Documentation">📖</a> <a href="https://github.com/codestates-seb/seb40_pre_037/pulls?q=is%3Apr+author%3AQuartz614" title="Pull Requests">🚀</a></td> 
+      <td align="center"><a href="https://github.com/HongSungHak"><img src="https://avatars.githubusercontent.com/u/101723087?v=4" width="100px;" alt=""/><br /><sub><b>Sunghak Hong</b></sub></a><br /><a href="https://github.com/codestates-seb/seb40_pre_037/commits?author=HongSungHak" title="Documentation">📖</a> <a href="https://github.com/codestates-seb/seb40_pre_037/pulls?q=is%3Apr+author%3AHongSungHak" title="Pull Requests">🚀</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
 <br/>
 
 ## ✅ 회의 일정
