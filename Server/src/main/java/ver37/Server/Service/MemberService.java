@@ -2,6 +2,7 @@ package ver37.Server.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ver37.Server.entity.Member;
 import ver37.Server.repository.MemberRepository;
 
@@ -9,10 +10,12 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    
+
+    @Transactional
     public Member createMember(Member member) {
         verifyEmail(member);
 
@@ -21,6 +24,7 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    @Transactional
     public Member updateMember(Member member) {
         Member verifyMember  = findVerifyMember(member.getMemberId());
 
@@ -31,6 +35,7 @@ public class MemberService {
         return verifyMember;
     }
 
+    @Transactional
     public void deleteMember(Long memberId) {
         Member verifyMember = findVerifyMember(memberId);
         verifyMember.deleteMember(Member.MemberStatus.MEMBER_SLEEP);
