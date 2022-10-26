@@ -25,25 +25,28 @@ public class Member {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
-    private String memberStatus;
+    private MemberStatus memberStatus= MemberStatus.MEMBER_ACTIVE;
 
     //유저 권한 바꾸기 메서드
     public void changeRoles(List<String> roles) {
         this.roles = roles;
     }
-    //패스워드 인코딩용 메서드
-    public void encodingPassword(String password) {
+    //패스워드 변경 메서드
+    public void updatingPassword(String password) {
         this.password = password;
+    }
+    //사용자 이름 변경 메서드
+    public void updatingName(String name) {
+        this.name = name;
     }
 
     //Member 생성자
     @Builder
-    public Member(Long memberId, String email, String name, String password, List<String> roles, String memberStatus) {
+    public Member(Long memberId, String email, String name, String password, List<String> roles) {
         this.memberId = memberId;
         this.email = email;
         this.name = name;
         this.password = password;
-        this.memberStatus = memberStatus;
         this.roles = roles;
     }
 
@@ -52,4 +55,7 @@ public class Member {
         MEMBER_SLEEP
     }
 
+    public void deleteMember(MemberStatus memberStatus) {
+        this.memberStatus = MemberStatus.MEMBER_SLEEP;
+    }
 }
