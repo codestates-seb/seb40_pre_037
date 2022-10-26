@@ -1,7 +1,8 @@
 import React from 'react';
+import Details from '../components/Detail';
 
 function BoardDetail() {
-  return <div />;
+  return <Details />;
 }
 
 export default BoardDetail;
