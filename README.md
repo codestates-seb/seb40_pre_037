@@ -41,6 +41,8 @@ yujung Choi</b></sub></a><br /><a href="https://github.com/codestates-seb/seb40_
 |          |               |
 |          |               |
 
+정기 회의 매일 13:00 ~ 
+
 <br/>
 
 <br/>
