@@ -6,8 +6,9 @@ const Container = styled.aside`
   width: 300px;
   background-color: rgb(251, 243, 213);
   color: rgb(97, 103, 106);
-  margin-top: 20px; // 추후 다른 컴포넌트와 합칠때 고려한 마진입니다.
+  margin-top: 75px; // 추후 다른 컴포넌트와 합칠때 고려한 마진입니다.
   margin-left: 20px; // 추후 다른 컴포넌트와 합칠때 고려한 마진입니다.
+  height: 100%;
 `;
 
 const WrapperOdd = styled.div`
@@ -38,7 +39,6 @@ const A = styled.a`
   line-height: 17px;
   text-decoration: none;
   color: rgb(97, 103, 106);
-
   &:hover {
     color: rgb(97, 103, 106);
   }
