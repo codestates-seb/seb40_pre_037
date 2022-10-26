@@ -19,5 +19,11 @@ module.exports = {
       },
     ],
     'no-console': 0,
+    'jsx-a11y/label-has-associated-control': [
+      2,
+      {
+        labelAttributes: ['htmlFor'],
+      },
+    ],
   },
 };
