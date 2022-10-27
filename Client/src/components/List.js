@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+
+const tags = ['linux', 'terminal', 'debian', 'gnome', 'ps1'];
 
 const Container = styled.main`
   @media screen and (min-width: 1261px) {
@@ -80,7 +83,93 @@ const Ul = styled.ul``;
 const Li = styled.li`
   border-top: 1px solid rgb(219, 222, 224);
   padding: 20px;
-  color: white;
+  display: flex;
+  width: 100%;
+  gap: 15px;
+`;
+
+const SummaryLeft = styled.div`
+  font-size: 13px;
+  line-height: 17px;
+  color: #6a737c;
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  span {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  span:first-child {
+    color: #0c0d0e;
+  }
+`;
+
+const SummaryRight = styled.div`
+  @media screen and (min-width: 1261px) {
+    width: 610px;
+  }
+  @media screen and (max-width: 1260px) {
+    width: 50.5vw;
+  }
+  p {
+    margin: 5px 0;
+    font-size: 13px;
+    line-height: 17px;
+    color: #3b4045;
+  }
+`;
+
+const TitleArticle = styled.span`
+  font-size: 17px;
+  line-height: 22px;
+  color: #0074cc;
+`;
+
+const WrapperBot = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const WrapperBtn = styled.div`
+  display: flex;
+  gap: 5px;
+`;
+
+const BtnTag = styled.button`
+  border: none;
+  font-size: 12px;
+  line-height: 12px;
+  text-align: center;
+  padding: 5px;
+  color: #39739d;
+  background-color: #e1ecf4;
+  border-radius: 3px;
+`;
+
+const WrapperMeta = styled.div`
+  font-size: 12px;
+  line-height: 12px;
+  display: flex;
+  align-items: baseline;
+`;
+
+const Img = styled.img`
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  margin-right: 3px;
+`;
+
+const Author = styled.span`
+  margin-right: 3px;
+  color: #0074cc;
+`;
+
+const CreatedAt = styled.span`
+  color: #525960;
 `;
 
 function List() {
@@ -114,19 +203,35 @@ function List() {
         <Ul>
           {posts.slice(0, 30).map(post => (
             <Li key={post.id}>
-              <div>
+              <SummaryLeft>
                 <span>{`${post.id} votes`}</span>
                 <span>{`${post.id} answers`}</span>
                 <span>{`${post.id} views`}</span>
-              </div>
-              <div>
-                <h1>{post.title}</h1>
-                <p>{post.content}</p>
-                <div>
-                  <div>linux, terminal, debian, gnome, ps1</div>
-                  <span>{`${post.UserId}`}</span>
-                </div>
-              </div>
+              </SummaryLeft>
+              <SummaryRight>
+                <Link to="/detail/:id">
+                  <TitleArticle>{post.title}</TitleArticle>
+                </Link>
+                <p>
+                  {post.content.length > 120
+                    ? `${post.content.split('').slice(0, 120).join('')}...`
+                    : post.content}
+                </p>
+                <WrapperBot>
+                  <WrapperBtn>
+                    {tags.map(tag => (
+                      <BtnTag key={tag}>{tag}</BtnTag>
+                    ))}
+                  </WrapperBtn>
+                  <WrapperMeta>
+                    <Img src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1" />
+                    <Link to="user/:id">
+                      <Author>Thomas</Author>
+                    </Link>
+                    <CreatedAt>asked 12 mins ago</CreatedAt>
+                  </WrapperMeta>
+                </WrapperBot>
+              </SummaryRight>
             </Li>
           ))}
         </Ul>
