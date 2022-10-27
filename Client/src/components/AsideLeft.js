@@ -6,12 +6,12 @@ import * as Icons from '@stackoverflow/stacks-icons';
 const Container = styled.aside`
   width: 155px;
   margin-left: 10px;
-  margin-top: 20px; // 추후 다른 컴포넌트와 합칠때 고려한 마진입니다.
+  margin-top: 75px; // 추후 다른 컴포넌트와 합칠때 고려한 마진입니다.
+  position: fixed;
 `;
 
 const TopBox = styled.div`
   padding: 10px 0px;
-
   h1 {
     font-size: 13px;
     line-height: 26px;
@@ -39,13 +39,11 @@ const WrapperTab = styled.div`
     height: 290px;
     margin-left: -10px;
     padding: 15px;
-
     span {
       font-size: 13px;
       line-height: 17px;
       color: #525960;
     }
-
     span:first-child {
       color: #2f3337;
       font-weight: bolder;
@@ -56,7 +54,7 @@ const WrapperTab = styled.div`
 const Ul = styled.ul`
   div {
     position: absolute;
-    top: 107px;
+    top: 93px;
     font-size: 13px;
   }
 `;
@@ -89,7 +87,6 @@ const BtnCreateTeam = styled.a`
   border-radius: 3px;
   box-shadow: rgba(255, 255, 255, 0.4) 0px 1px 0px 0px inset;
   font-weight: 600;
-
   &:hover {
     color: white;
   }
@@ -99,7 +96,6 @@ const BtnWhyTeam = styled(BtnCreateTeam)`
   background-color: white;
   color: #6a737c;
   font-weight: 400;
-
   &:hover {
     color: #6a737c;
     background-color: #f8f9f9;
