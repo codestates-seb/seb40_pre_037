@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 const NavContainer = styled.div`
   position: fixed;
+  z-index: 1;
   top: 0px;
   width: 100vw;
   background-color: white;
