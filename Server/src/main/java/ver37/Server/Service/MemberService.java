@@ -1,11 +1,18 @@
 package ver37.Server.Service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ver37.Server.entity.Jwt;
 import ver37.Server.entity.Member;
+import ver37.Server.repository.JwtRepository;
 import ver37.Server.repository.MemberRepository;
+import ver37.Server.security.auth.utils.CustomAuthorityUtils;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -14,19 +21,26 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CustomAuthorityUtils authorityUtils;
+
+    private final JwtRepository jwtRepository;
+
 
     @Transactional
     public Member createMember(Member member) {
         verifyEmail(member);
 
         //추후 시큐리티 들어가면 패스워드와 회원 권한 바꾸는 로직 채워둘것
+        member.updatingPassword(bCryptPasswordEncoder.encode(member.getPassword()));
+        member.changeRoles(authorityUtils.createRoles(member.getEmail()));
 
         return memberRepository.save(member);
     }
 
     @Transactional
     public Member updateMember(Member member) {
-        Member verifyMember  = findVerifyMember(member.getMemberId());
+        Member verifyMember = findVerifyMember(member.getMemberId());
 
         Optional.ofNullable(member.getName()).ifPresent(verifyMember::updatingName);
 
@@ -40,6 +54,26 @@ public class MemberService {
         Member verifyMember = findVerifyMember(memberId);
         verifyMember.deleteMember(Member.MemberStatus.MEMBER_SLEEP);
     }
+
+    public String getAccessToken(String refreshToken) {
+
+        Jwt token = jwtRepository.findRefreshToken(refreshToken).orElseThrow(() -> new RuntimeException("존재하지 않는 리프레쉬 토큰"));
+
+        String accessToken = JWT.create()
+                .withExpiresAt(new Date(System.currentTimeMillis() + (60000)))
+                .withClaim("id", token.getMember().getMemberId())
+                .withClaim("username", token.getMember().getEmail())
+                .sign(Algorithm.HMAC256("zion"));
+
+        return accessToken;
+    }
+
+    public void deleteToken(String refreshToken) {
+        Jwt jwt = jwtRepository.findRefreshToken(refreshToken).orElseThrow();
+        jwtRepository.delete(jwt);
+    }
+
+
 
     //존재하는 멤버 찾는 메서드
     public Member findVerifyMember(Long memberId) {
