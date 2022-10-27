@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Details from '../components/Detail';
+import Details from '../components/QnA';
 import Nav from '../components/Nav';
 import AsideLeft from '../components/AsideLeft';
 
