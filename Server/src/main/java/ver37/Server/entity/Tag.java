@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -20,7 +22,7 @@ public class Tag {
         this.tagName = tagName;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "POST_ID")
-    private Post post;
+    @OneToMany(mappedBy = "postTagId")
+    private List<PostTag> postTags = new ArrayList<>();
+
 }
