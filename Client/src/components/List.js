@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const tags = ['linux', 'terminal', 'debian', 'gnome', 'ps1'];
+const offsetPage = 5;
 
 const Container = styled.main`
   @media screen and (min-width: 1261px) {
@@ -172,23 +173,95 @@ const CreatedAt = styled.span`
   color: #525960;
 `;
 
+const Pagenation = styled.div`
+  width: 100%;
+  height: 145px;
+  border-top: 1px solid rgb(219, 222, 224);
+`;
+
+const WrapperBtnPage = styled.div`
+  display: flex;
+  gap: 5px;
+  padding-top: 75px;
+  padding-left: 30px;
+  align-items: baseline;
+  height: 30px;
+
+  span {
+    margin: 0 10px;
+    line-height: 25px;
+    font-size: 13px;
+    color: #232529;
+  }
+`;
+
+const BtnPage = styled.button`
+  padding: 0px 8px;
+  font-size: 12px;
+  height: 30px;
+  min-width: 30px;
+  color: #3b3035;
+  background-color: white;
+  border: 1px solid rgb(226, 228, 230);
+
+  &:hover {
+    color: #0c0d0e;
+    background-color: #d9d6dc;
+    cursor: pointer;
+  }
+`;
+
 function List() {
   const [posts, setePosts] = useState([]);
+  const [pages, setPages] = useState([]);
+  const [curPage, setCurPage] = useState(1);
+  const [pageLasts, setPageLasts] = useState([]);
+  const pageAheads = [1, 2, 3];
 
   const fetchPosts = async () => {
     const response = await axios.get('https://koreanjson.com/posts');
     setePosts(response.data);
   };
 
+  const getPages = () => {
+    const arr = Array.from(
+      { length: Math.ceil(posts.length / 30) + 1 },
+      (_, i) => i,
+    );
+    setPages(arr);
+    setPageLasts(arr.slice(-3));
+  };
+
+  const onClickPage = event => {
+    event.preventDefault();
+    setCurPage(+event.target.innerText);
+  };
+
+  const onClickPrev = event => {
+    event.preventDefault();
+    setCurPage(prev => prev - 1);
+  };
+
+  const onClickNext = event => {
+    event.preventDefault();
+    setCurPage(prev => prev + 1);
+  };
+
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    getPages();
+  }, [posts]);
   return (
     <Container>
       <Section>
         <Wrapper>
           <Title>All Questions</Title>
-          <BtnWrite>Ask Question</BtnWrite>
+          <Link to="/write">
+            <BtnWrite>Ask Question</BtnWrite>
+          </Link>
         </Wrapper>
         <Wrapper>
           <NumOfArticle>23,156,270 questions</NumOfArticle>
@@ -209,7 +282,7 @@ function List() {
                 <span>{`${post.id} views`}</span>
               </SummaryLeft>
               <SummaryRight>
-                <Link to="/detail/:id">
+                <Link to="/detail">
                   <TitleArticle>{post.title}</TitleArticle>
                 </Link>
                 <p>
@@ -235,6 +308,53 @@ function List() {
             </Li>
           ))}
         </Ul>
+        <Pagenation>
+          <WrapperBtnPage>
+            {pageAheads.includes(curPage) ? (
+              <>
+                {pages.slice(1, 6).map(pageNum => (
+                  <BtnPage key={pageNum} onClick={onClickPage}>
+                    {pageNum}
+                  </BtnPage>
+                ))}
+                <span>...</span>
+                <BtnPage onClick={onClickPage}>
+                  {pages[pages.length - 1]}
+                </BtnPage>
+                <BtnPage onClick={onClickNext}>Next</BtnPage>
+              </>
+            ) : pageLasts.includes(curPage) ? (
+              <>
+                <BtnPage onClick={onClickPrev}>Prev</BtnPage>
+                <BtnPage onClick={onClickPage}>{pages[1]}</BtnPage>
+                <span>...</span>
+                {pages.slice(-5).map(pageNum => (
+                  <BtnPage key={pageNum} onClick={onClickPage}>
+                    {pageNum}
+                  </BtnPage>
+                ))}
+              </>
+            ) : (
+              <>
+                <BtnPage onClick={onClickPrev}>Prev</BtnPage>
+                <BtnPage onClick={onClickPage}>{pages[1]}</BtnPage>
+                <span>...</span>
+                {pages
+                  .slice(curPage - 2, curPage + offsetPage - 2)
+                  .map(pageNum => (
+                    <BtnPage key={pageNum} onClick={onClickPage}>
+                      {pageNum}
+                    </BtnPage>
+                  ))}
+                <span>...</span>
+                <BtnPage onClick={onClickPage}>
+                  {pages[pages.length - 1]}
+                </BtnPage>
+                <BtnPage onClick={onClickNext}>Next</BtnPage>
+              </>
+            )}
+          </WrapperBtnPage>
+        </Pagenation>
       </Section>
     </Container>
   );
