@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const PageLayout = styled.div`
   width: 100%;
@@ -94,6 +95,31 @@ const LeftText = styled.div`
 `;
 
 function SignupComponent() {
+  const [inputName, setInputName] = useState('');
+  const [inputEmail, setInputEmail] = useState('');
+  const [inputPassword, setInputPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    const data = {
+      email: inputEmail,
+      name: inputName,
+      password: inputPassword,
+    };
+
+    return axios
+      .post('/members', data)
+      .then(response => {
+        console.log(response);
+        navigate('/login');
+      })
+      .catch(error => {
+        console.log(error);
+        navigate('/');
+      });
+  };
+
   return (
     <PageLayout>
       <TextBox>
@@ -168,8 +194,10 @@ function SignupComponent() {
               <div className="d-flex ps-relative">
                 <input
                   className="flex--item s-input"
-                  type="text"
+                  type="name"
                   id="Display name"
+                  value={inputName}
+                  onChange={e => setInputName(e.target.value)}
                 />
               </div>
             </form>
@@ -180,7 +208,13 @@ function SignupComponent() {
                 Email
               </label>
               <div className="d-flex ps-relative">
-                <input className="flex--item s-input" type="text" id="Email" />
+                <input
+                  className="flex--item s-input"
+                  type="Email"
+                  id="Email"
+                  value={inputEmail}
+                  onChange={e => setInputEmail(e.target.value)}
+                />
               </div>
             </form>
           </Formblock>
@@ -192,8 +226,10 @@ function SignupComponent() {
               <div className="d-flex ps-relative">
                 <input
                   className="flex--item s-input"
-                  type="text"
+                  type="password"
                   id="password"
+                  value={inputPassword}
+                  onChange={e => setInputPassword(e.target.value)}
                 />
               </div>
             </form>
@@ -212,7 +248,11 @@ function SignupComponent() {
           </p>
           <Formblock>
             {' '}
-            <button className="s-btn s-btn__primary" type="button">
+            <button
+              className="s-btn s-btn__primary"
+              type="button"
+              onClick={handleSubmit}
+            >
               Sign up
             </button>
             <p />
