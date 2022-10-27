@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Post {
+public class Post extends Auditing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,11 +37,7 @@ public class Post {
     private List<PostTag> PostTags = new ArrayList<>();
 
 
-    public void addPostTags(Tag tag) {
-        PostTags.stream().forEach(postTag -> {
-            postTag.addTag(tag);
-        });
-    }
+
 
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
