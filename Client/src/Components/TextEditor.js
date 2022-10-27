@@ -20,7 +20,7 @@ export default function TextEditor() {
       <Editor
         initialValue="hello world!"
         previewStyle="vertical"
-        height="700px"
+        height="300px"
         initialEditType="markdown"
         useCommandShortcut={false}
         language="ko-KR"

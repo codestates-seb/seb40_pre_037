@@ -12,6 +12,7 @@ const Main = styled.main`
 const Section = styled.section`
   display: flex;
   flex-direction: row;
+  margin: 0 auto;
 `;
 
 function BoardDetail() {

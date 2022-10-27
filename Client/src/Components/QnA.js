@@ -1,19 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 import * as Icons from '@stackoverflow/stacks-icons';
+import { useNavigate } from 'react-router-dom';
 
 import AsideRight from './AsideRight';
 import TextEditor from './TextEditor';
 
 const DetailContainer = styled.div`
+  max-width: 1100px;
   padding: 24px 16px;
   margin-left: 165px;
   margin-top: 50px;
 `;
 
-const QuestionContainer = styled.div`
-  border-bottom: 1px solid hsl(210, 8%, 90%);
-`;
+const QuestionContainer = styled.div``;
 
 const AnswerContainer = styled.div`
   padding: 24px 0;
@@ -33,7 +33,7 @@ const TitleWrapper = styled.div`
 const Title = styled.div`
   display: flex;
   flex-direction: column;
-  word-break: break-all;
+  word-break: break-word;
 `;
 
 const H1Container = styled.h1`
@@ -45,7 +45,9 @@ const SubInfo = styled.span`
   margin-right: 16px;
 `;
 
-const ButtonWrapper = styled.div``;
+const ButtonWrapper = styled.div`
+  padding: 10px 0 15px 0;
+`;
 
 const Button = styled.button`
   margin-left: 12px;
@@ -124,7 +126,17 @@ const H2 = styled.h2`
   line-height: 1.3;
 `;
 
+const MarginWrapper = styled.div`
+  margin-top: -75px;
+`;
+
 export default function Details() {
+  const navigate = useNavigate();
+
+  const handleNewAnswer = () => {
+    navigate('/write');
+  };
+
   return (
     <DetailContainer>
       <QuestionContainer>
@@ -144,6 +156,7 @@ export default function Details() {
               className="s-btn s-btn__primary"
               width="115px"
               type="button"
+              onClick={handleNewAnswer}
             >
               Ask Question
             </Button>
@@ -245,13 +258,15 @@ export default function Details() {
             </AnswerContainer>
             <H2 className="space">Your Answer</H2>
             <TextEditor />
-            <ButtonWrapper>
+            <ButtonWrapper className="clear-both d-flex gsx gs4">
               <Button className="s-btn s-btn__primary" type="button">
                 Post Your Answer
               </Button>
             </ButtonWrapper>
           </ContentContainer>
-          <AsideRight />
+          <MarginWrapper>
+            <AsideRight />
+          </MarginWrapper>
         </SideWrapper>
       </QuestionContainer>
     </DetailContainer>
