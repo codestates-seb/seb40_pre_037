@@ -1,3 +1,11 @@
+/*
+책임개발자 : 전은혜
+최초생성일 : 2022.10.26
+최근수정일 : 2022.10.27
+개요 :
+- 추후 수정
+*/
+
 import React from 'react';
 import styled from 'styled-components';
 import * as Icons from '@stackoverflow/stacks-icons';
