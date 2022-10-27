@@ -27,6 +27,9 @@ public class Member {
 
     private MemberStatus memberStatus= MemberStatus.MEMBER_ACTIVE;
 
+    @OneToMany(mappedBy = "member")
+    private List<Post> posts = new ArrayList<>();
+
     //유저 권한 바꾸기 메서드
     public void changeRoles(List<String> roles) {
         this.roles = roles;
