@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import * as Icons from '@stackoverflow/stacks-icons';
 
 import AsideRight from './AsideRight';
+import TextEditor from './TextEditor';
 
 const DetailContainer = styled.div`
   padding: 24px 16px;
@@ -48,7 +49,7 @@ const ButtonWrapper = styled.div``;
 
 const Button = styled.button`
   margin-left: 12px;
-  width: 115px;
+  width: ${props => props.width};
   height: 40px;
   font-size: 13px;
   line-height: 15px;
@@ -116,6 +117,13 @@ const NameSpace = styled.div`
   }
 `;
 
+const H2 = styled.h2`
+  font-weight: 400;
+  font-size: 1.4rem;
+  margin: 0 0 1em;
+  line-height: 1.3;
+`;
+
 export default function Details() {
   return (
     <DetailContainer>
@@ -132,7 +140,11 @@ export default function Details() {
             </p>
           </Title>
           <ButtonWrapper>
-            <Button className="s-btn s-btn__primary" type="button">
+            <Button
+              className="s-btn s-btn__primary"
+              width="115px"
+              type="button"
+            >
               Ask Question
             </Button>
           </ButtonWrapper>
@@ -185,6 +197,9 @@ export default function Details() {
               </NameSpace>
             </ArticleWrapper>
             <AnswerContainer>
+              <H2 className="answers-subheader d-flex ai-center mb8">
+                2 Answers
+              </H2>
               <ContentContainer>
                 <ArticleWrapper>
                   <TextWrapper>
@@ -228,6 +243,13 @@ export default function Details() {
                 </div>
               </NameSpace>
             </AnswerContainer>
+            <H2 className="space">Your Answer</H2>
+            <TextEditor />
+            <ButtonWrapper>
+              <Button className="s-btn s-btn__primary" type="button">
+                Post Your Answer
+              </Button>
+            </ButtonWrapper>
           </ContentContainer>
           <AsideRight />
         </SideWrapper>
