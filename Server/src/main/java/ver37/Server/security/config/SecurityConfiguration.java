@@ -75,7 +75,7 @@ public class SecurityConfiguration {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
 
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager,jwtRepository);
-            jwtAuthenticationFilter.setFilterProcessesUrl("member/login");
+            jwtAuthenticationFilter.setFilterProcessesUrl("/members/login");
 
             JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(authenticationManager,memberRepository);
 
