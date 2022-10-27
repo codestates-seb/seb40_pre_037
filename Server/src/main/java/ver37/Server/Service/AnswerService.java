@@ -13,6 +13,7 @@ public class AnswerService {
     private List<Answer> findAnswers() {
         return answerRepository.findAll();
     }
+
     private final AnswerRepository answerRepository;
 
     public AnswerService(AnswerRepository answerRepository) {
@@ -27,11 +28,13 @@ public class AnswerService {
         Answer answer = answerRepository.findByAnswerId(answerId);
         answerRepository.delete(answer);
     }
+
     public Answer updateAnswer(Answer answer) {
         Answer findAnswer = answerRepository.findByAnswerId(answer.getAnswerId());
-        findAnswer.setAnswerBody(answer.getAnswerBody());
+        findAnswer.updateAnswerBody(answer.getAnswerBody());
         return answerRepository.save(findAnswer);
     }
+
     public Answer findAnswer(long answerId) {
         return answerRepository.findByAnswerId(answerId);
     }
