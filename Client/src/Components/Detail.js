@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import * as Icons from '@stackoverflow/stacks-icons';
 
+import AsideRight from './AsideRight';
+
 const DetailContainer = styled.div`
   padding: 24px 16px;
 `;
@@ -27,6 +29,7 @@ const TitleWrapper = styled.div`
 const Title = styled.div`
   display: flex;
   flex-direction: column;
+  word-break: break-all;
 `;
 
 const H1Container = styled.div`
@@ -45,6 +48,7 @@ const Button = styled.button`
   height: 40px;
   font-size: 13px;
   line-height: 15px;
+  /* position: absolute; */
 `;
 
 const ContentContainer = styled.div`
@@ -92,8 +96,6 @@ const NameSpace = styled.div`
 `;
 
 export default function Details() {
-  console.log(Icons.IconArrowUpLg);
-  console.log(Icons.IconArrowDownLg);
   return (
     <DetailContainer>
       <QuestionContainer>
@@ -138,6 +140,7 @@ export default function Details() {
               </Tags>
             </TagContainer>
           </TextAreaContainer>
+          <AsideRight />
         </ContentContainer>
         <NameSpace>
           <div className="s-user-card s-user-card__highlighted">
