@@ -1,25 +1,31 @@
 package ver37.Server.mapper;
 
+
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import ver37.Server.dto.PostDto;
 import ver37.Server.entity.Post;
-import ver37.Server.entity.PostTag;
-import ver37.Server.entity.Tag;
+
+
 
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PostMapper  {
+
 
     default Post postDtoToPost(PostDto.Post postDto) {
         Post post = Post.builder()
                 .title(postDto.getTitle())
                 .postBody(postDto.getBody())
                 .build();
-        postDto.getTags().stream().map(tag-> new Tag(tag)).forEach(tag -> {
-            PostTag postTag = new PostTag();
-            postTag.addTag(tag,post);
+        postDto.getTags().stream().forEach(tag -> {
+            post.getTags().add(tag);
         });
+
+//        postDto.getTags().stream().map(tag-> new Tag(tag)).forEach(tag -> {
+//            PostTag postTag = new PostTag();
+//            postTag.addTag(tag,post);
+//        });
         return post;
     }
 
