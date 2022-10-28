@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ver37.Server.entity.Member;
 import ver37.Server.entity.Post;
+import ver37.Server.exception.CustomException;
+import ver37.Server.exception.ExceptionCode;
 import ver37.Server.repository.JwtRepository;
 import ver37.Server.repository.PostRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Currency;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +31,12 @@ public class PostService {
     }
 
     private Member getMemberByAccess() {
+        if (request.getHeader("Authorization") == null) {
+            throw new CustomException(ExceptionCode.MISSING_HEADER_ACCESS_TOKEN);
+        }
+
         String replace = request.getHeader("Authorization").replace("Bearer ", "");
+
         Member member = memberService.getMemberFromToken(replace);
         return member;
     }
@@ -37,7 +45,7 @@ public class PostService {
         Post verifyPost = findVerifyPost(post.getPostId());
         Member memberByRequest = getMemberByAccess();
         if (verifyPost.equals(memberByRequest)) {
-            throw new RuntimeException("본인이 작성한 글만 수정가능합니다.");
+            throw new CustomException(ExceptionCode.INVALID_AUTH_TOKEN);
         }
 
         verifyPost.changeSubject(post.getTitle(), post.getPostBody(), post.getTags());
@@ -45,7 +53,7 @@ public class PostService {
     }
 
     public Post findVerifyPost(Long postId) {
-        return postRepository.findPostId(postId).orElseThrow(() -> new RuntimeException("존재하지 않는 게시글입니다."));
+        return postRepository.findPostId(postId).orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
     }
 
 }

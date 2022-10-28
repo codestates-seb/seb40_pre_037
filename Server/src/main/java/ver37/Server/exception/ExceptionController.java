@@ -9,10 +9,11 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
 
-@RestController
+@RestControllerAdvice
 public class ExceptionController {
 
     @ExceptionHandler
@@ -47,7 +48,7 @@ public class ExceptionController {
     public Response handleHttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException e) {
 
-        final Response response = Response.of(HttpStatus.METHOD_NOT_ALLOWED);
+        final Response response = Response.of(HttpStatus.METHOD_NOT_ALLOWED,"메서드 문법이 틀렸습니다. 문법을 지켜주세요.");
 
         return response;
     }
@@ -69,7 +70,7 @@ public class ExceptionController {
             MissingServletRequestParameterException e) {
 
         final Response response = Response.of(HttpStatus.BAD_REQUEST,
-                e.getMessage());
+                "파라미터가 빠졌습니다.");
 
         return response;
     }
