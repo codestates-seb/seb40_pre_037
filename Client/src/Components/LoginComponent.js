@@ -68,14 +68,17 @@ function LoginComponent() {
 
   const onClickLogin = e => {
     e.preventDefault();
+    let isLoggedin = false;
     users.forEach(user => {
       if (user.email === inputEmail && user.password === inputPassword) {
         setCurUser(user);
         navigate('/');
-      } else {
-        alert('없는 이메일이거나 패스워드가 틀렸습니다.');
+        isLoggedin = true;
       }
     });
+    if (!isLoggedin) {
+      alert('없는 이메일이거나 틀린 패스워드 입니다.');
+    }
   };
 
   return (
