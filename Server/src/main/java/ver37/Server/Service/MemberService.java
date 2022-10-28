@@ -3,6 +3,7 @@ package ver37.Server.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -69,8 +71,7 @@ public class MemberService {
     }
 
     public void deleteToken(String refreshToken) {
-        Jwt jwt = jwtRepository.findRefreshToken(refreshToken).orElseThrow();
-        jwtRepository.delete(jwt);
+        jwtRepository.deleteJwtToken(refreshToken);
     }
 
 
