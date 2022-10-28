@@ -2,6 +2,8 @@ import React from 'react';
 import * as Icons from '@stackoverflow/stacks-icons';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { curUserAtom } from '../atoms';
 
 const NavContainer = styled.div`
   position: fixed;
@@ -35,6 +37,13 @@ const Search = styled.div`
 `;
 
 function Nav() {
+  const [curUser, setCurUser] = useRecoilState(curUserAtom);
+
+  const onClickLogout = e => {
+    e.preventDefault();
+    setCurUser({});
+  };
+
   return (
     <NavContainer className="bs-sm bt btw3 z-selected bc-orange-400">
       <nav className="d-flex ai-center jc-end fd-row">
@@ -80,24 +89,33 @@ function Nav() {
             placeholder="Search..."
           />
         </div>
-        <div className="flex--item d-flex">
-          <Link to="/login">
-            <button
-              className="s-btn s-btn__filled flex--item ml8 s-btn__sm w64"
-              type="button"
-            >
-              Log in
+        {curUser.email ? (
+          <>
+            <span>{curUser.email}</span>
+            <button type="button" onClick={onClickLogout}>
+              Log Out
             </button>
-          </Link>
-          <Link to="/signup">
-            <button
-              className="s-btn s-btn__primary flex--item mr8 ml4 s-btn__sm bg-blue-500 w64"
-              type="button"
-            >
-              Sign up
-            </button>
-          </Link>
-        </div>
+          </>
+        ) : (
+          <div className="flex--item d-flex">
+            <Link to="/login">
+              <button
+                className="s-btn s-btn__filled flex--item ml8 s-btn__sm w64"
+                type="button"
+              >
+                Log in
+              </button>
+            </Link>
+            <Link to="/signup">
+              <button
+                className="s-btn s-btn__primary flex--item mr8 ml4 s-btn__sm bg-blue-500 w64"
+                type="button"
+              >
+                Sign up
+              </button>
+            </Link>
+          </div>
+        )}
       </nav>
     </NavContainer>
   );
