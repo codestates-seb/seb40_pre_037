@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         //jwt 토큰 만드는 라이브러리
         String accessToken = JWT.create()
                 .withSubject("JWT")
-                .withExpiresAt(new Date(System.currentTimeMillis() + (600)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 100)))
                 .withClaim("id", principal.getMember().getMemberId())
                 .withClaim("username", principal.getUsername())
                 .sign(Algorithm.HMAC256("zion"));

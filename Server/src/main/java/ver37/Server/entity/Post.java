@@ -23,24 +23,22 @@ public class Post extends Auditing {
     private String title;
     private String postBody;
 
-    private Integer articleVote = 0;
+    private Integer likeCount = 0;
 
+
+
+    //post생성자
     @Builder
     public Post(String title, String postBody) {
         this.title = title;
         this.postBody = postBody;
     }
-    //사용자가 tag를 String으로 보내주면 tags를 서비스 로직에서  분해해서 프론트에게 리스트로 전달 가능하냐고 물어보기
-    private String tags;
 
-    @OneToMany(mappedBy = "postTagId", cascade = CascadeType.PERSIST)
-    private List<PostTag> PostTags = new ArrayList<>();
+    @OneToMany(mappedBy = "postTagId",cascade = CascadeType.PERSIST)
+    private List<PostTag> postTags = new ArrayList<>();
 
-
-
-
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+//충돌
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
