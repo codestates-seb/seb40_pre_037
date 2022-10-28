@@ -34,7 +34,12 @@ public class PostController {
                                     @RequestBody PostDto.Patch patch) {
         patch.setPostId(postId);
         Post post = postService.patchPost(postMapper.patchToPostResponse(patch));
-        return new ResponseEntity(postMapper.postToPostResponse(post), HttpStatus.OK);
+        return new ResponseEntity<>(postMapper.postToPostResponse(post), HttpStatus.OK);
     }
 
+    @GetMapping("/{post-id}")
+    public ResponseEntity getPost(@PathVariable("post-id") Long postId) {
+        Post verifyPost = postService.findVerifyPost(postId);
+        return new ResponseEntity<>(postMapper.postToPostResponse(verifyPost), HttpStatus.OK);
+    }
 }
