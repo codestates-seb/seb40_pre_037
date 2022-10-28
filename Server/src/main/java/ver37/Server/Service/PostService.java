@@ -26,7 +26,7 @@ public class PostService {
 
     private Member getMemberFromToken(String token) {
 
-        Jwt jwt = jwtRepository.findRefreshToken(token).orElseThrow(() -> new RuntimeException("멤버 못참음"));
+        Jwt jwt = jwtRepository.findAccessToken(token).orElseThrow(() -> new RuntimeException("멤버 못참음"));
         Member verifyMember = memberService.findVerifyMember(jwt.getMember().getMemberId());
 
         return verifyMember;
