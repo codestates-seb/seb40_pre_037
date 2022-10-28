@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { curUserAtom, usersAtom } from '../atoms';
 
 const LoginPage = styled.div`
   display: flex;
@@ -52,6 +54,9 @@ const Formblock = styled.div`
 function LoginComponent() {
   const [inputEmail, setInputEmail] = useState('');
   const [inputPassword, setInputPassword] = useState('');
+  const setCurUser = useSetRecoilState(curUserAtom);
+  const users = useRecoilValue(usersAtom);
+  const navigate = useNavigate();
 
   const handleEmail = e => {
     setInputEmail(e.target.value);
@@ -61,28 +66,17 @@ function LoginComponent() {
     setInputPassword(e.target.value);
   };
 
-  const onClickLogin = () => {
-    axios
-      .post('https://f16f-49-172-251-241.jp.ngrok.io/member', null, {
-        params: {
-          email: inputEmail,
-          password: inputPassword,
-        },
-      })
-      .then(res => console.log(res))
-      .catch();
+  const onClickLogin = e => {
+    e.preventDefault();
+    users.forEach(user => {
+      if (user.email === inputEmail && user.password === inputPassword) {
+        setCurUser(user);
+        navigate('/');
+      } else {
+        alert('없는 이메일이거나 패스워드가 틀렸습니다.');
+      }
+    });
   };
-
-  useEffect(() => {
-    axios
-      .get('https://f16f-49-172-251-241.jp.ngrok.io/member')
-      .then(res => {
-        console.log(res.data);
-      })
-      .catch(Error => {
-        console.log(Error);
-      });
-  }, []);
 
   return (
     <LoginPage>
