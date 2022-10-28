@@ -1,6 +1,7 @@
 package ver37.Server.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import ver37.Server.entity.Member;
 import ver37.Server.entity.Post;
@@ -10,7 +11,6 @@ import ver37.Server.repository.JwtRepository;
 import ver37.Server.repository.PostRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Currency;
 
 @Service
 @RequiredArgsConstructor
@@ -30,17 +30,6 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    private Member getMemberByAccess() {
-        if (request.getHeader("Authorization") == null) {
-            throw new CustomException(ExceptionCode.MISSING_HEADER_ACCESS_TOKEN);
-        }
-
-        String replace = request.getHeader("Authorization").replace("Bearer ", "");
-
-        Member member = memberService.getMemberFromToken(replace);
-        return member;
-    }
-
     public Post patchPost(Post post) {
         Post verifyPost = findVerifyPost(post.getPostId());
         Member memberByRequest = getMemberByAccess();
@@ -51,9 +40,28 @@ public class PostService {
         verifyPost.changeSubject(post.getTitle(), post.getPostBody(), post.getTags());
         return verifyPost;
     }
+    //최근순
+    public Page<Post> getPresentPost(int page, int size) {
+        return postRepository.findAll(PageRequest.of(page, size, Sort.by("postId").descending()));
+    }
+    //좋아요순
+
+    //조회수 순
+
+
 
     public Post findVerifyPost(Long postId) {
         return postRepository.findPostId(postId).orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
     }
 
+    private Member getMemberByAccess() {
+        if (request.getHeader("Authorization") == null) {
+            throw new CustomException(ExceptionCode.MISSING_HEADER_ACCESS_TOKEN);
+        }
+
+        String replace = request.getHeader("Authorization").replace("Bearer ", "");
+
+        Member member = memberService.getMemberFromToken(replace);
+        return member;
+    }
 }
