@@ -9,7 +9,6 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import Nav from '../components/Nav';
 import Ask from '../components/Ask';
 import Footer from '../components/Footer';
 
@@ -20,7 +19,6 @@ const WriteContainer = styled.div`
 function BoardWrite() {
   return (
     <WriteContainer>
-      <Nav />
       <Ask />
       <Footer />
     </WriteContainer>

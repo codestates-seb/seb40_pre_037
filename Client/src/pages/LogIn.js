@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import LoginComponent from '../components/LoginComponent';
-import Nav from '../components/Nav';
 
 const WrapperAll = styled.div`
   display: flex;
@@ -11,10 +10,6 @@ const WrapperAll = styled.div`
   align-items: center;
 `;
 
-const WrapperNav = styled.div`
-  height: 55px;
-`;
-
 const WrapperBody = styled.div`
   margin: 0 auto;
 `;
@@ -22,9 +17,6 @@ const WrapperBody = styled.div`
 function LogIn() {
   return (
     <WrapperAll>
-      <WrapperNav>
-        <Nav />
-      </WrapperNav>
       <WrapperBody>
         <LoginComponent />
       </WrapperBody>
