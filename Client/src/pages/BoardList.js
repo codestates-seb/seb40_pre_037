@@ -4,9 +4,12 @@ import Nav from '../components/Nav';
 import AsideLeft from '../components/AsideLeft';
 import List from '../components/List';
 import AsideRight from '../components/AsideRight';
+import Footer from '../components/Footer';
 
 const WrapperAll = styled.div`
   display: flex;
+  flex-direction: column;
+  margin-top: -50px;
 `;
 
 const WrapperNav = styled.div`
@@ -22,6 +25,8 @@ const WrapperMain = styled.div`
   margin-left: 165px;
 `;
 
+const WrapperFooter = styled.div``;
+
 function BoardList() {
   return (
     <WrapperAll>
@@ -35,6 +40,9 @@ function BoardList() {
           <AsideRight />
         </WrapperMain>
       </WrapperBody>
+      <WrapperFooter>
+        <Footer />
+      </WrapperFooter>
     </WrapperAll>
   );
 }
