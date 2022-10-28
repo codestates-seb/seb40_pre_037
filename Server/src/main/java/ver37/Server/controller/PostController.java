@@ -22,12 +22,19 @@ public class PostController {
     private final PostMapper postMapper;
 
     @PostMapping
-    public ResponseEntity postPost(@RequestHeader("Authorization") String token,
-                                   @RequestBody PostDto.Post post) {
+    public ResponseEntity postPost(@RequestBody PostDto.Post post) {
         Post postAble =
-                postService.creatPost(postMapper.postDtoToPost(post), token);
+                postService.creatPost(postMapper.postDtoToPost(post));
 
-        return new ResponseEntity<>(postMapper.PostToPostResponse(postAble), HttpStatus.CREATED);
+        return new ResponseEntity<>(postMapper.postToPostResponse(postAble), HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{post-id}")
+    public ResponseEntity patchPost(@PathVariable("post-id") Long postId,
+                                    @RequestBody PostDto.Patch patch) {
+        patch.setPostId(postId);
+        Post post = postService.patchPost(postMapper.patchToPostResponse(patch));
+        return new ResponseEntity(postMapper.postToPostResponse(post), HttpStatus.OK);
     }
 
 }

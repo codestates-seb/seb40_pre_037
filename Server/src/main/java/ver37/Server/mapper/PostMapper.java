@@ -17,10 +17,9 @@ public interface PostMapper  {
         Post post = Post.builder()
                 .title(postDto.getTitle())
                 .postBody(postDto.getBody())
+                .tags(postDto.getTags())
                 .build();
-        postDto.getTags().stream().forEach(tag -> {
-            post.getTags().add(tag);
-        });
+
 
 //        postDto.getTags().stream().map(tag-> new Tag(tag)).forEach(tag -> {
 //            PostTag postTag = new PostTag();
@@ -29,7 +28,17 @@ public interface PostMapper  {
         return post;
     }
 
-    default PostDto.Response PostToPostResponse(Post post) {
+    default Post patchToPostResponse(PostDto.Patch patch) {
+        Post post = Post.builder()
+                .postId(patch.getPostId())
+                .title(patch.getTitle())
+                .postBody(patch.getBody())
+                .tags(patch.getTags())
+                .build();
+        return post;
+    }
+
+    default PostDto.Response postToPostResponse(Post post) {
         PostDto.Response response = new PostDto.Response(post);
         return response;
     }

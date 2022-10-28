@@ -28,7 +28,6 @@ public class MemberService {
     private final CustomAuthorityUtils authorityUtils;
 
     private final JwtRepository jwtRepository;
-
     private final EntityManager em;
 
     @Transactional

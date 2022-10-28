@@ -2,8 +2,10 @@ package ver37.Server.dto;
 
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 public class PostDto {
@@ -23,26 +25,23 @@ public class PostDto {
 
     //게시글 수정
     @Getter
+    @Setter
     public static class Patch {
-
         private Long postId;
 
-        //제목 수정
         private String title;
-        //내용 수정
+
         private String body;
 
-        //여러 태그 추가
         private List<String> tags;
 
-//        //게시글 수정
-//        public patch(String title, String body, List<TagDto> questionTags) {
-//            this.title = title;
-//            this.body = body;
-//            this.questionTags = questionTags;
-//        }
+        //게시글 수정
+        public Patch(String title, String body, List<String> tags) {
+            this.title = title;
+            this.body = body;
+            this.tags = tags;
+        }
 
-        //게시글 삭제
     }
 
     @Getter
