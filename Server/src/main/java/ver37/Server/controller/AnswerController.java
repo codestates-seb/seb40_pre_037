@@ -26,24 +26,6 @@ public class AnswerController {
         return new ResponseEntity<>(answerMapper.answerToResponse(answer), HttpStatus.CREATED);
     }
 
-//    @PatchMapping("{answer-id}")
-//    public ResponseEntity patchAnswer(@PathVariable("answer-id") @Positive long answerId,
-//                                      @Valid @RequestBody AnswerDto.Patch patch) {
-//        Answer answer = answerService.updateAnswer(answerMapper.answerPatchToAnswer(patch));
-//        return new ResponseEntity<>(answerMapper.answerToResponse(answer), HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/{answer-id}")
-//    public ResponseEntity getAnswer(@PathVariable("answer-id") @Positive long answerId) {
-//        Answer answer = answerService.findAnswer(answerId);
-//
-//        return new ResponseEntity<>(answerMapper.answerToResponse(answer), HttpStatus.OK);
-//    }
-//
-//    @DeleteMapping("/{answer-id}")
-//    public ResponseEntity deleteAnswer(@PathVariable("answer-id") long answerId) {
-//        answerService.deleteAnswer(answerId);
-//
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    //getMapping은 한번에 다 보내주는 걸로 연관된 모든 answer를 보내준다.
+
 }
