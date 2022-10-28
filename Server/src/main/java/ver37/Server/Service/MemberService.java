@@ -73,7 +73,7 @@ public class MemberService {
         em.clear();
         return accessToken;
     }
-
+    @Transactional
     public void deleteToken(String refreshToken) {
         jwtRepository.deleteJwtToken(refreshToken);
     }
