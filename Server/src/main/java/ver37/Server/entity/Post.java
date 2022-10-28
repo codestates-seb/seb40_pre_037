@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Post {
+public class Post extends Auditing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,8 +37,7 @@ public class Post {
     @OneToMany(mappedBy = "postTagId",cascade = CascadeType.PERSIST)
     private List<PostTag> postTags = new ArrayList<>();
 
-
-
+//충돌
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;

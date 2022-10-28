@@ -1,38 +1,36 @@
 package ver37.Server.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+
 public class AnswerDto {
 
+    //게시글 작성
     @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class Post {
+        @Positive
+        private long answerId;
+        @NotBlank(message = "답변 내용을 적어주세요.")
         private String answerBody;
     }
 
     @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private static class Patch {
+    public static class Patch {
         private long answerId;
         private String answerBody;
     }
 
     @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class Response {
         private long answerId;
         private String answerBody;
     }
+
 
 }
 

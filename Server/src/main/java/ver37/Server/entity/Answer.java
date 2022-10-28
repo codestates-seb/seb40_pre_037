@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Answer {
+public class Answer extends Auditing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long answerId;
@@ -36,6 +36,6 @@ public class Answer {
         this.answerBody = answerBody;
     }
 
-    public void setAnswerBody(String answerBody) {
+    public void updateAnswerBody(String answerBody) {
     }
 }
