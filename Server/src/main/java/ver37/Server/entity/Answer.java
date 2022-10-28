@@ -36,6 +36,6 @@ public class Answer extends Auditing {
         this.answerBody = answerBody;
     }
 
-    public void setAnswerBody(String answerBody) {
+    public void updateAnswerBody(String answerBody) {
     }
 }
