@@ -90,7 +90,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .sign(Algorithm.HMAC256("zion"));
 
 
-        Jwt jwt = new Jwt(refreshToken, principal.getMember());
+        Jwt jwt = new Jwt(accessToken,refreshToken, principal.getMember());
 
         jwtRepository.save(jwt);
 

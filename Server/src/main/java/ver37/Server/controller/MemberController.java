@@ -32,11 +32,11 @@ public class MemberController {
     }
 
     @PostMapping("/refresh")
-    public String refreshToken(@RequestHeader String Refresh) {
+    public ResponseEntity refreshToken(@RequestHeader String Refresh) {
         System.out.println(Refresh+"입니");
         String accessToken = service.getAccessToken(Refresh);
         response.addHeader("Authorization",accessToken);
-        return accessToken;
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PatchMapping("/{member-id}")

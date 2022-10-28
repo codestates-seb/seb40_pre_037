@@ -22,11 +22,13 @@ public class PostController {
     private final PostMapper postMapper;
 
     @PostMapping
-    public ResponseEntity postPost(@RequestHeader("Refresh") String token,
+    public ResponseEntity postPost(@RequestHeader("Authorization") String token,
                                    @RequestBody PostDto.Post post) {
+        String pureToken= token.replace("Bearer ", "");
         Post postAble =
-                postService.creatPost(postMapper.postDtoToPost(post), token);
+                postService.creatPost(postMapper.postDtoToPost(post), pureToken);
 
         return new ResponseEntity<>(postMapper.PostToPostResponse(postAble), HttpStatus.CREATED);
     }
+
 }
