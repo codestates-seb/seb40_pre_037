@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.swing.text.html.HTML;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +21,13 @@ public class Post extends Auditing {
     private String title;
     private String postBody;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> tags = new ArrayList<>();
+
+
+
     private Integer likeCount = 0;
+
 
 
 
@@ -34,15 +38,16 @@ public class Post extends Auditing {
         this.postBody = postBody;
     }
 
-    @OneToMany(mappedBy = "postTagId",cascade = CascadeType.PERSIST)
-    private List<PostTag> postTags = new ArrayList<>();
+//    @OneToMany(mappedBy = "postTagId",cascade = CascadeType.PERSIST)
+//    private List<PostTag> postTags = new ArrayList<>();
+//
+//
 
-//충돌
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    //포스트에게 member 주입시 자동으로 member에도 post가 넣어짐
+    //포스트에게 member 주입시 자동으로 member 에도 post 가 넣어짐
     public void addMember(Member member) {
         this.member = member;
         if (!member.getPosts().contains(this)) {

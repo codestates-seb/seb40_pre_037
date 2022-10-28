@@ -1,18 +1,10 @@
 package ver37.Server.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import ver37.Server.entity.Post;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PostDto {
 
@@ -74,7 +66,8 @@ public class PostDto {
             this.body = post.getPostBody();
             this.likeCount = post.getLikeCount();
             this.memberName = post.getMember().getName();
-            this.tags = post.getPostTags().stream().map(postTag -> postTag.getTag().getTagName()).collect(Collectors.toList());
+//            this.tags = post.getPostTags().stream().map(postTag -> postTag.getTag().getTagName()).collect(Collectors.toList());
+            this.tags = post.getTags();
         }
     }
 }
