@@ -19,8 +19,6 @@ public class PostDto {
         private String body;
 
         private List<String> tags;
-
-
     }
 
     //게시글 수정

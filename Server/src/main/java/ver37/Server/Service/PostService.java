@@ -15,22 +15,11 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final JwtRepository jwtRepository;
-
     private final MemberService memberService;
 
     public Post creatPost(Post post, String token) { //컨트롤러에서는 헤더와 post디티오를 받아와야함
-        Member member = getMemberFromToken(token);
+        Member member = memberService.getMemberFromToken(token);
         post.addMember(member);
         return postRepository.save(post);
     }
-
-    private Member getMemberFromToken(String token) {
-
-        Jwt jwt = jwtRepository.findAccessToken(token).orElseThrow(() -> new RuntimeException("멤버 못참음"));
-        Member verifyMember = memberService.findVerifyMember(jwt.getMember().getMemberId());
-
-        return verifyMember;
-    }
-
-
 }

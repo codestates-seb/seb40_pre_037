@@ -94,4 +94,13 @@ public class MemberService {
             throw new RuntimeException("이미 존재하는 회원입니다.");
         }
     }
+
+    public Member getMemberFromToken(String token) {
+        String pureToken = token.replace("Bearer ", "");
+
+        Jwt jwt = jwtRepository.findAccessToken(pureToken).orElseThrow(() -> new RuntimeException("멤버 못참음"));
+        Member verifyMember = findVerifyMember(jwt.getMember().getMemberId());
+
+        return verifyMember;
+    }
 }

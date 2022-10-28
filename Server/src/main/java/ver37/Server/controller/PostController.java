@@ -24,9 +24,8 @@ public class PostController {
     @PostMapping
     public ResponseEntity postPost(@RequestHeader("Authorization") String token,
                                    @RequestBody PostDto.Post post) {
-        String pureToken= token.replace("Bearer ", "");
         Post postAble =
-                postService.creatPost(postMapper.postDtoToPost(post), pureToken);
+                postService.creatPost(postMapper.postDtoToPost(post), token);
 
         return new ResponseEntity<>(postMapper.PostToPostResponse(postAble), HttpStatus.CREATED);
     }
