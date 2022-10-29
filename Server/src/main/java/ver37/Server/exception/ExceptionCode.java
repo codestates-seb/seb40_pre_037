@@ -20,7 +20,8 @@ public enum ExceptionCode {
 
     //게시굴
     POST_NOT_FOUND(404, "존재하지 않는 게시글입니다."),
-
+    LIKE_NOT_ACCEPTED(400, "회원당 한번만 좋아요를 누를 수 있습니다."),
+    ANSWER_NOT_FOUND(404, "존재하지 않는 답변입니다."),
     //시큐리티
     USER_NOT_FOUNT(404, "로그인 시도중 -> 해당 유저가 존재하지 않습니다.")
     ;
