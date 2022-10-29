@@ -22,6 +22,7 @@ public class AnswerDto {
     }
 
     @Getter
+    @Setter
     public static class Patch {
         private long answerId;
         private String answerBody;
