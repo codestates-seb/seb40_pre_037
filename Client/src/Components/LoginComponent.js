@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const LoginPage = styled.div`
@@ -52,6 +52,7 @@ const Formblock = styled.div`
 function LoginComponent() {
   const [inputEmail, setInputEmail] = useState('');
   const [inputPassword, setInputPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleEmail = e => {
     setInputEmail(e.target.value);
@@ -61,28 +62,25 @@ function LoginComponent() {
     setInputPassword(e.target.value);
   };
 
-  const onClickLogin = () => {
-    axios
-      .post('https://f16f-49-172-251-241.jp.ngrok.io/member', null, {
-        params: {
-          email: inputEmail,
-          password: inputPassword,
-        },
-      })
-      .then(res => console.log(res))
-      .catch();
-  };
+  const handleLogin = e => {
+    e.preventDefault();
+    const data = {
+      username: inputEmail,
+      password: inputPassword,
+    };
 
-  useEffect(() => {
-    axios
-      .get('https://f16f-49-172-251-241.jp.ngrok.io/member')
-      .then(res => {
-        console.log(res.data);
+    return axios
+      .post('/members/login', data)
+      .then(response => {
+        console.log(response);
+        const accessToken = response.Authorization;
+        localStorage.setItem('access_token', accessToken);
+        navigate('/');
       })
-      .catch(Error => {
-        console.log(Error);
+      .catch(error => {
+        console.log(error);
       });
-  }, []);
+  };
 
   return (
     <LoginPage>
@@ -185,7 +183,7 @@ function LoginComponent() {
             <button
               className="s-btn s-btn__primary"
               type="button"
-              onClick={onClickLogin}
+              onClick={handleLogin}
             >
               Log in
             </button>
