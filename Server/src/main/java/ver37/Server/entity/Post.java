@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,10 +22,13 @@ public class Post extends Auditing {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> tags = new ArrayList<>();
-
+    //좋아요는 로그인해야 가능함 헤더 필요 인당 1번만 가능
     private Integer likeCount = 0;
 
-    //post생성자
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<Long, Integer> likeRepo = new HashMap<>();
+    private Integer viewCount = 0;
+
     @Builder
     public Post(Long postId, String title, String postBody,List<String> tags) {
         this.postId = postId;
@@ -37,21 +38,25 @@ public class Post extends Auditing {
     }
 
     public void changeSubject(String title, String body, List<String> tag) {
-        Optional.of(title).ifPresent(real -> {
+        Optional.ofNullable(title).ifPresent(real -> {
             this.title = real;
         });
-        Optional.of(body).ifPresent(real -> {
+        Optional.ofNullable(body).ifPresent(real -> {
             this.postBody = real;
         });
-        Optional.of(tag).ifPresent(real -> {
+        Optional.ofNullable(tag).ifPresent(real -> {
             this.tags = real;
         });
     }
 
-    //    @OneToMany(mappedBy = "postTagId",cascade = CascadeType.PERSIST)
-//    private List<PostTag> postTags = new ArrayList<>();
-//
-//
+    public void plusViewCount() {
+        this.viewCount += 1;
+    }
+
+    public void changeLikeCount(int likeCount) {
+        this.likeCount += likeCount;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;

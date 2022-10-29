@@ -59,7 +59,7 @@ public class MemberService {
         Member verifyMember = findVerifyMember(memberId);
         verifyMember.deleteMember(Member.MemberStatus.MEMBER_SLEEP);
     }
-
+    @Transactional
     public String getAccessToken(String refreshToken) {
 
         Jwt token = jwtRepository.findRefreshToken(refreshToken).orElseThrow(() -> new CustomException(ExceptionCode.REFRESH_TOKEN_NOT_FOUND));
@@ -71,8 +71,8 @@ public class MemberService {
                 .sign(Algorithm.HMAC256("zion"));
 
         token.changeAccessToken(accessToken);
-        em.flush();
-        em.clear();
+//        em.flush();
+//        em.clear();  아마 트랜잭션 때문일거임
         return accessToken;
     }
     @Transactional

@@ -3,15 +3,17 @@ package ver37.Server.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.web.servlet.View;
 import ver37.Server.dto.PostDto;
 import ver37.Server.entity.Post;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface PostMapper  {
+public interface PostMapper {
 
 
     default Post postDtoToPost(PostDto.Post postDto) {
@@ -21,11 +23,9 @@ public interface PostMapper  {
                 .tags(postDto.getTags())
                 .build();
 
+//        Views views = new Views(post);
+//        post.addView(views);
 
-//        postDto.getTags().stream().map(tag-> new Tag(tag)).forEach(tag -> {
-//            PostTag postTag = new PostTag();
-//            postTag.addTag(tag,post);
-//        });
         return post;
     }
 

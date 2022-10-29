@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class PostDto {
@@ -51,10 +52,10 @@ public class PostDto {
         private String title;
         private String body;
         private List<String> tags;
-        //        private Integer viewCount;
+        private Integer viewCount;
         private Integer likeCount;
-        //        private LocalDateTime Ask;   //작성일
-//        private LocalDateTime Modified; //수정일
+        private LocalDateTime createdAt;   //작성일
+        private LocalDateTime lastModifiedDate; //수정일
         private String memberName;
 
         public Response(ver37.Server.entity.Post post) {
@@ -62,9 +63,11 @@ public class PostDto {
             this.title = post.getTitle();
             this.body = post.getPostBody();
             this.likeCount = post.getLikeCount();
+            this.viewCount = post.getViewCount();
             this.memberName = post.getMember().getName();
-//            this.tags = post.getPostTags().stream().map(postTag -> postTag.getTag().getTagName()).collect(Collectors.toList());
             this.tags = post.getTags();
+            this.createdAt = post.getCreatedAt();
+            lastModifiedDate = post.getLastModifiedAt();
         }
     }
 }
