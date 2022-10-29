@@ -40,9 +40,6 @@ public class Response {
         return new Response(exceptionCode.getCode(), exceptionCode.getMessage());
     }
 
-    public static Response of(HttpStatus httpStatus) {
-        return new Response(httpStatus.value(), httpStatus.getReasonPhrase());
-    }
 
     public static Response of(HttpStatus httpStatus, String message) {
         return new Response(httpStatus.value(), message);
