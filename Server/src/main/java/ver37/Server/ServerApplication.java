@@ -17,9 +17,5 @@ public class ServerApplication {
 		SpringApplication.run(ServerApplication.class, args);
 
 	}
-	/*@Bean
-	public AuditorAware<String> auditorProvider() {
-		return () -> Optional.of(UUID.randomUUID().toString());
-	}*/
 
 }

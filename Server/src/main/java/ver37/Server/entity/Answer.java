@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -18,18 +22,17 @@ public class Answer extends Auditing {
 
     private Long checkingPostId;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    @Size(min = 15)
     private String answerBody;
 
-    @Column(nullable = false)
+
     private Integer likeCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<Long, Integer> likeRepo = new HashMap<>();
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID")
     private Post post;
@@ -46,9 +49,14 @@ public class Answer extends Auditing {
         this.checkingPostId = checkingPostId;
         this.answerBody = answerBody;
     }
-
-
-    public void updateAnswerBody(String answerBody) {
-        this.answerBody = answerBody;
+    public void changeLikeCount(int likeCount) {
+        this.likeCount += likeCount;
     }
+
+    public void changeSubject(String answerBody) {
+        Optional.ofNullable(answerBody).ifPresent(real -> {
+            this.answerBody = real;
+        });
+        }
+
 }

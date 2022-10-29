@@ -33,6 +33,10 @@ dependencies {
 //h2
 	runtimeOnly 'com.h2database:h2'
 
+//mysql
+//	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'mysql:mysql-connector-java' // MySql
+
 //mapper 자동 생성
 	implementation 'org.mapstruct:mapstruct:1.5.2.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'

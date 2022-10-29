@@ -2,8 +2,13 @@ package ver37.Server.dto;
 
 
 import lombok.Getter;
+import lombok.Setter;
+import ver37.Server.validator.NotSpace;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class PostDto {
@@ -11,11 +16,10 @@ public class PostDto {
     //게시글 작성
     @Getter
     public static class Post {
-
-        @NotBlank(message = "질문 제목을 적어주세요.")
+        @NotBlank
+        @Size(min = 5 ,message = "5자 이상 입력해주세요")
         private String title;
-
-        @NotBlank(message = "질문 내용을 적어주세요.")
+        @NotSpace
         private String body;
 
         private List<String> tags;
@@ -23,26 +27,23 @@ public class PostDto {
 
     //게시글 수정
     @Getter
+    @Setter
     public static class Patch {
-
         private Long postId;
-
-        //제목 수정
+        @Size(min = 15 ,message = "15자 이상 입력해주세요")
         private String title;
-        //내용 수정
+        @NotSpace
         private String body;
 
-        //여러 태그 추가
         private List<String> tags;
 
-//        //게시글 수정
-//        public patch(String title, String body, List<TagDto> questionTags) {
-//            this.title = title;
-//            this.body = body;
-//            this.questionTags = questionTags;
-//        }
+        //게시글 수정
+        public Patch(String title, String body, List<String> tags) {
+            this.title = title;
+            this.body = body;
+            this.tags = tags;
+        }
 
-        //게시글 삭제
     }
 
     @Getter
@@ -52,10 +53,10 @@ public class PostDto {
         private String title;
         private String body;
         private List<String> tags;
-        //        private Integer viewCount;
+        private Integer viewCount;
         private Integer likeCount;
-        //        private LocalDateTime Ask;   //작성일
-//        private LocalDateTime Modified; //수정일
+        private LocalDateTime createdAt;   //작성일
+        private LocalDateTime lastModifiedDate; //수정일
         private String memberName;
 
         public Response(ver37.Server.entity.Post post) {
@@ -63,9 +64,11 @@ public class PostDto {
             this.title = post.getTitle();
             this.body = post.getPostBody();
             this.likeCount = post.getLikeCount();
+            this.viewCount = post.getViewCount();
             this.memberName = post.getMember().getName();
-//            this.tags = post.getPostTags().stream().map(postTag -> postTag.getTag().getTagName()).collect(Collectors.toList());
             this.tags = post.getTags();
+            this.createdAt = post.getCreatedAt();
+            lastModifiedDate = post.getLastModifiedAt();
         }
     }
 }
