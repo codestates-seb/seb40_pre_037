@@ -3,6 +3,7 @@ package ver37.Server.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +13,14 @@ import ver37.Server.repository.JwtRepository;
 import ver37.Server.repository.MemberRepository;
 import ver37.Server.security.auth.utils.CustomAuthorityUtils;
 
+import javax.persistence.EntityManager;
 import java.util.Date;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -26,6 +29,7 @@ public class MemberService {
 
     private final JwtRepository jwtRepository;
 
+    private final EntityManager em;
 
     @Transactional
     public Member createMember(Member member) {
@@ -65,12 +69,14 @@ public class MemberService {
                 .withClaim("username", token.getMember().getEmail())
                 .sign(Algorithm.HMAC256("zion"));
 
+        token.changeAccessToken(accessToken);
+        em.flush();
+        em.clear();
         return accessToken;
     }
 
     public void deleteToken(String refreshToken) {
-        Jwt jwt = jwtRepository.findRefreshToken(refreshToken).orElseThrow();
-        jwtRepository.delete(jwt);
+        jwtRepository.deleteJwtToken(refreshToken);
     }
 
 
@@ -87,5 +93,14 @@ public class MemberService {
             //리펙터링 포인트 예외 처리로직으로 대체할것
             throw new RuntimeException("이미 존재하는 회원입니다.");
         }
+    }
+
+    public Member getMemberFromToken(String token) {
+        String pureToken = token.replace("Bearer ", "");
+
+        Jwt jwt = jwtRepository.findAccessToken(pureToken).orElseThrow(() -> new RuntimeException("멤버 못참음"));
+        Member verifyMember = findVerifyMember(jwt.getMember().getMemberId());
+
+        return verifyMember;
     }
 }

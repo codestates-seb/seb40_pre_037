@@ -1,16 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
-import Nav from '../components/Nav';
 import AsideLeft from '../components/AsideLeft';
 import List from '../components/List';
 import AsideRight from '../components/AsideRight';
+import Footer from '../components/Footer';
 
 const WrapperAll = styled.div`
   display: flex;
-`;
-
-const WrapperNav = styled.div`
-  height: 55px;
+  flex-direction: column;
 `;
 
 const WrapperBody = styled.div`
@@ -22,12 +19,11 @@ const WrapperMain = styled.div`
   margin-left: 165px;
 `;
 
+const WrapperFooter = styled.div``;
+
 function BoardList() {
   return (
     <WrapperAll>
-      <WrapperNav>
-        <Nav />
-      </WrapperNav>
       <WrapperBody>
         <AsideLeft />
         <WrapperMain>
@@ -35,6 +31,9 @@ function BoardList() {
           <AsideRight />
         </WrapperMain>
       </WrapperBody>
+      <WrapperFooter>
+        <Footer />
+      </WrapperFooter>
     </WrapperAll>
   );
 }

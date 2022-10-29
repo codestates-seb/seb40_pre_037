@@ -6,15 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.swing.text.html.HTML;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Post {
+public class Post extends Auditing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,32 +21,33 @@ public class Post {
     private String title;
     private String postBody;
 
-    private Integer articleVote = 0;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> tags = new ArrayList<>();
 
+
+
+    private Integer likeCount = 0;
+
+
+
+
+    //post생성자
     @Builder
     public Post(String title, String postBody) {
         this.title = title;
         this.postBody = postBody;
     }
-    //사용자가 tag를 String으로 보내주면 tags를 서비스 로직에서  분해해서 프론트에게 리스트로 전달 가능하냐고 물어보기
-    private String tags;
 
-    @OneToMany(mappedBy = "postTagId", cascade = CascadeType.PERSIST)
-    private List<PostTag> PostTags = new ArrayList<>();
+//    @OneToMany(mappedBy = "postTagId",cascade = CascadeType.PERSIST)
+//    private List<PostTag> postTags = new ArrayList<>();
+//
+//
 
-
-    public void addPostTags(Tag tag) {
-        PostTags.stream().forEach(postTag -> {
-            postTag.addTag(tag);
-        });
-    }
-
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    //포스트에게 member 주입시 자동으로 member에도 post가 넣어짐
+    //포스트에게 member 주입시 자동으로 member 에도 post 가 넣어짐
     public void addMember(Member member) {
         this.member = member;
         if (!member.getPosts().contains(this)) {

@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import Nav from '../components/Nav';
 import SignupComponent from '../components/SignupComponent';
 
 const WrapperAll = styled.div`
@@ -11,10 +10,6 @@ const WrapperAll = styled.div`
   align-items: center;
 `;
 
-const WrapperNav = styled.div`
-  height: 55px;
-`;
-
 const WrapperBody = styled.div`
   margin: 0 auto;
 `;
@@ -22,9 +17,6 @@ const WrapperBody = styled.div`
 function SignUp() {
   return (
     <WrapperAll>
-      <WrapperNav>
-        <Nav />
-      </WrapperNav>
       <WrapperBody>
         <SignupComponent />
       </WrapperBody>
