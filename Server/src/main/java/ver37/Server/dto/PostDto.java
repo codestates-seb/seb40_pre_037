@@ -3,7 +3,9 @@ package ver37.Server.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import ver37.Server.validator.NotSpace;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -14,11 +16,10 @@ public class PostDto {
     //게시글 작성
     @Getter
     public static class Post {
-
-        @NotBlank(message = "질문 제목을 적어주세요.")
+        @NotBlank
+        @Size(min = 5 ,message = "5자 이상 입력해주세요")
         private String title;
-
-        @NotBlank(message = "질문 내용을 적어주세요.")
+        @NotSpace
         private String body;
 
         private List<String> tags;
@@ -29,9 +30,9 @@ public class PostDto {
     @Setter
     public static class Patch {
         private Long postId;
-
+        @Size(min = 15 ,message = "15자 이상 입력해주세요")
         private String title;
-
+        @NotSpace
         private String body;
 
         private List<String> tags;

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ver37.Server.Service.PostService;
 import ver37.Server.dto.MultiResponseDto;
@@ -25,7 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/post")
 @RequiredArgsConstructor
-@Valid
+@Validated
 public class PostController {
     private final PostService postService;
     private final PostMapper postMapper;
@@ -33,7 +34,7 @@ public class PostController {
 
 
     @PostMapping
-    public ResponseEntity postPost(@RequestBody PostDto.Post post) {
+    public ResponseEntity postPost(@Valid @RequestBody PostDto.Post post) {
         Post postAble =
                 postService.creatPost(postMapper.postDtoToPost(post));
 
@@ -42,7 +43,7 @@ public class PostController {
 
     @PatchMapping("/{post-id}")
     public ResponseEntity patchPost(@PathVariable("post-id") Long postId,
-                                    @RequestBody PostDto.Patch patch) {
+                                    @Valid @RequestBody PostDto.Patch patch) {
         patch.setPostId(postId);
         Post post = postService.patchPost(postMapper.patchToPostResponse(patch));
         return new ResponseEntity<>(postMapper.postToPostResponse(post), HttpStatus.OK);

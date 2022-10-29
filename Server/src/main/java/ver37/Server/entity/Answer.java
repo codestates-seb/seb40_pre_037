@@ -22,11 +22,9 @@ public class Answer extends Auditing {
 
     private Long checkingPostId;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    @Size(min = 15)
     private String answerBody;
 
-    @Column(nullable = false)
+
     private Integer likeCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)

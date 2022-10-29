@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ver37.Server.Service.AnswerService;
 import ver37.Server.dto.AnswerDto;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/answers")
 @RequiredArgsConstructor
+@Validated
 public class AnswerController {
     private final AnswerService answerService;
     private final AnswerMapper answerMapper;
@@ -32,7 +34,7 @@ public class AnswerController {
 
     @PatchMapping("/{answer-Id}")
     public ResponseEntity patchAnswer(@PathVariable("answer-Id") Long answerId,
-                                      @RequestBody AnswerDto.Patch patch) {
+                                      @Valid @RequestBody AnswerDto.Patch patch) {
         patch.setAnswerId(answerId);
         Answer answer = answerService.patchAnswer(answerMapper.answerPatchDtoToAnswer(patch));
         return new ResponseEntity(answerMapper.answerToResponse(answer), HttpStatus.OK);
