@@ -1,35 +1,35 @@
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/project?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password:
-
-  jpa:
-    hibernate:
-      ddl-auto: validate  # (1) ??? ?? ??
-    show-sql: true      # (2) SQL ?? ??
-    properties:
-      hibernate:
-        format_sql: true  # (3) SQL pretty print
-    database: mysql
-  sql:
-    init:
-      data-locations: classpath*:db/h2/data.sql
-
-logging:
-  level:
-    org:
-      springframework:
-        orm:
-          jpa: DEBUG
-server:
-  servlet:
-    encoding:
-      force-response: true
-      charset: UTF-8
-      enabled: true
-    context-path: /
-mail:
-  address:
-    admin: admin@gmail.com
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/project?serverTimezone=UTC&characterEncoding=UTF-8
+#    username: root
+#    password:
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: validate  # (1) ??? ?? ??
+#    show-sql: true      # (2) SQL ?? ??
+#    properties:
+#      hibernate:
+#        format_sql: true  # (3) SQL pretty print
+#    database: mysql
+#  sql:
+#    init:
+#      data-locations: classpath*:db/h2/data.sql
+#
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        orm:
+#          jpa: DEBUG
+#server:
+#  servlet:
+#    encoding:
+#      force-response: true
+#      charset: UTF-8
+#      enabled: true
+#    context-path: /
+#mail:
+#  address:
+#    admin: admin@gmail.com
