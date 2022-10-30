@@ -6,10 +6,14 @@ import BoardWrite from './pages/BoardWrite';
 import LogIn from './pages/LogIn';
 import SignUp from './pages/SignUp';
 import Nav from './components/Nav';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Nav />
       <Routes>
         <Route path="/" element={<BoardList />} />
@@ -18,7 +22,8 @@ function App() {
         <Route path="/login" element={<LogIn />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
-    </>
+      {/* <ReactQueryDevtools initialIsOpen /> */}
+    </QueryClientProvider>
   );
 }
 
