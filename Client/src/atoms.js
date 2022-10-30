@@ -9,3 +9,9 @@ export const curUserAtom = atom({
   key: 'curUser',
   default: {},
 });
+
+export const postsAtom = atom({
+  key: 'posts',
+  default: [{}],
+  effects: [],
+});
