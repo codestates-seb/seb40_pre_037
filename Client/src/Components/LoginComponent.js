@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { curUserAtom, usersAtom } from '../atoms';
 
 const LoginPage = styled.div`
   display: flex;
@@ -52,6 +54,10 @@ const Formblock = styled.div`
 function LoginComponent() {
   const [inputEmail, setInputEmail] = useState('');
   const [inputPassword, setInputPassword] = useState('');
+  const [isLoggedIn, setIsloggedIn] = useState(false);
+  const setCurUser = useSetRecoilState(curUserAtom);
+  const users = useRecoilValue(usersAtom);
+  const navigate = useNavigate();
 
   const handleEmail = e => {
     setInputEmail(e.target.value);
@@ -61,28 +67,25 @@ function LoginComponent() {
     setInputPassword(e.target.value);
   };
 
-  const onClickLogin = () => {
-    axios
-      .post('https://f16f-49-172-251-241.jp.ngrok.io/member', null, {
-        params: {
-          email: inputEmail,
-          password: inputPassword,
-        },
-      })
-      .then(res => console.log(res))
-      .catch();
-  };
+  const onClickLogin = e => {
+    e.preventDefault();
 
-  useEffect(() => {
-    axios
-      .get('https://f16f-49-172-251-241.jp.ngrok.io/member')
-      .then(res => {
-        console.log(res.data);
-      })
-      .catch(Error => {
-        console.log(Error);
-      });
-  }, []);
+    let user1 = [];
+    users.forEach(user => {
+      if (user.email === inputEmail && user.password === inputPassword) {
+        // console.log(usersAtom);
+        user1 = [{ ...user }];
+      }
+    });
+    console.log(user1);
+    if (user1.length <= 0) {
+      console.log(isLoggedIn);
+    } else {
+      setIsloggedIn(true);
+      setCurUser({ ...user1 });
+      navigate('/');
+    }
+  };
 
   return (
     <LoginPage>

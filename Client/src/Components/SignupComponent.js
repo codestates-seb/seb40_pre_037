@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+// import axios from 'axios';
+import { useSetRecoilState } from 'recoil';
+import { usersAtom } from '../atoms';
 
 const PageLayout = styled.div`
   width: 100%;
@@ -99,6 +101,7 @@ function SignupComponent() {
   const [inputEmail, setInputEmail] = useState('');
   const [inputPassword, setInputPassword] = useState('');
   const navigate = useNavigate();
+  const setUsers = useSetRecoilState(usersAtom);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -106,18 +109,11 @@ function SignupComponent() {
       email: inputEmail,
       name: inputName,
       password: inputPassword,
+      id: Date.now(),
     };
-
-    return axios
-      .post('/members', data)
-      .then(response => {
-        console.log(response);
-        navigate('/login');
-      })
-      .catch(error => {
-        console.log(error);
-        navigate('/');
-      });
+    setUsers(prev => [...prev, data]);
+    navigate('/login');
+    console.log(usersAtom);
   };
 
   return (
