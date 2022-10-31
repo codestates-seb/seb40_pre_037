@@ -43,6 +43,9 @@ public class Answer extends Auditing {
 
     public void addPost(Post post) {
         this.post = post;
+        if (!post.getAnswers().contains(this)) {
+            post.getAnswers().add(this);
+        }
     }
 
     public Answer(Long checkingPostId, String answerBody) {

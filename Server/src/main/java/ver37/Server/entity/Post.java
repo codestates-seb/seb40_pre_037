@@ -69,4 +69,8 @@ public class Post extends Auditing {
         }
     }
 
+    @OneToMany(mappedBy = "post")
+    private List<Answer> answers = new ArrayList<>();
+
+
 }

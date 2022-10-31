@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ver37.Server.validator.NotSpace;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -55,6 +56,8 @@ public class PostDto {
         private List<String> tags;
         private Integer viewCount;
         private Integer likeCount;
+
+        private Integer answerCount;
         private LocalDateTime createdAt;   //작성일
         private LocalDateTime lastModifiedDate; //수정일
         private String memberName;
@@ -65,6 +68,7 @@ public class PostDto {
             this.body = post.getPostBody();
             this.likeCount = post.getLikeCount();
             this.viewCount = post.getViewCount();
+            this.answerCount = post.getAnswers().size();
             this.memberName = post.getMember().getName();
             this.tags = post.getTags();
             this.createdAt = post.getCreatedAt();
