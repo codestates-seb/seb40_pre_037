@@ -10,10 +10,10 @@ import ver37.Server.entity.Jwt;
 import java.util.Optional;
 
 public interface JwtRepository extends JpaRepository<Jwt, Long> {
-    @Query("select t from Jwt t where t.refreshToken = :token")
+    @Query("select t from Jwt t left join fetch t.member where t.refreshToken = :token")
     Optional<Jwt> findRefreshToken(@Param("token") String token);
 
-    @Query("select t from Jwt t where t.accessToken = :token")
+    @Query("select t from Jwt t left join fetch t.member where t.accessToken = :token")
     Optional<Jwt> findAccessToken(@Param("token") String token);
 
 

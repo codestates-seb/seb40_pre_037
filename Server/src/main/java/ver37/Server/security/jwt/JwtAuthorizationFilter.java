@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import ver37.Server.entity.Member;
+import ver37.Server.exception.CustomException;
+import ver37.Server.exception.ExceptionCode;
 import ver37.Server.repository.MemberRepository;
 import ver37.Server.security.auth.CustomDetails;
 
@@ -58,7 +60,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         //username 이 존재한다면 서명이 정상적으로 되었다는 의미
         if (username != null) {
-            Member member = memberRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("데이터 베이스에 존재하지 않는 유저입니다."));
+            Member member = memberRepository.findByEmail(username).orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_FOUNT));
 
             CustomDetails customDetails = new CustomDetails(member);
 
