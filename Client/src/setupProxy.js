@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     '/members',
     createProxyMiddleware({
-      target: 'https://dbee-49-172-251-241.jp.ngrok.io',
+      target: 'https://054a-49-172-251-241.jp.ngrok.io/',
       changeOrigin: true,
     }),
   );

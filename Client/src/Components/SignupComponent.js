@@ -116,7 +116,6 @@ function SignupComponent() {
       })
       .catch(error => {
         console.log(error);
-        navigate('/');
       });
   };
 
