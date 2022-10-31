@@ -68,6 +68,7 @@ public class MemberService {
                 .withExpiresAt(new Date(System.currentTimeMillis() + (60000)))
                 .withClaim("id", token.getMember().getMemberId())
                 .withClaim("username", token.getMember().getEmail())
+                .withClaim("nickname", token.getMember().getName())
                 .sign(Algorithm.HMAC256("zion"));
 
         token.changeAccessToken(accessToken);

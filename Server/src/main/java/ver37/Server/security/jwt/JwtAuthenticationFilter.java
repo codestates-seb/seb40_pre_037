@@ -77,6 +77,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 100)))
                 .withClaim("id", principal.getMember().getMemberId())
                 .withClaim("username", principal.getUsername())
+                .withClaim("nickname", principal.getMember().getName())
                 .sign(Algorithm.HMAC256("zion"));
 
 //        System.out.println(jwtToken+"전송완료");
@@ -87,6 +88,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + (600000) * 4))
                 .withClaim("id", principal.getMember().getMemberId())
                 .withClaim("username", principal.getUsername())
+                .withClaim("nickname", principal.getMember().getName())
                 .sign(Algorithm.HMAC256("zion"));
 
 
