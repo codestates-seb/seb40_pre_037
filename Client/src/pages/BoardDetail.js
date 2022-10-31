@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import Details from '../components/QnA';
-import Nav from '../components/Nav';
 import AsideLeft from '../components/AsideLeft';
 import Footer from '../components/Footer';
 
@@ -19,7 +18,6 @@ const Section = styled.section`
 function BoardDetail() {
   return (
     <Main>
-      <Nav />
       <Section>
         <AsideLeft />
         <Details />

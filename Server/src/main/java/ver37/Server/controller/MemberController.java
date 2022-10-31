@@ -17,7 +17,7 @@ import javax.validation.constraints.Positive;
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
-@Valid
+@Validated
 public class MemberController {
 
     private final MemberService service;
@@ -26,17 +26,16 @@ public class MemberController {
     private final HttpServletResponse response;
 
     @PostMapping
-    public ResponseEntity postMember(@Validated @RequestBody MemberDto.Post post) {
+    public ResponseEntity postMember(@Valid @RequestBody MemberDto.Post post) {
         Member member = service.createMember(mapper.PostToMember(post));
         return new ResponseEntity(mapper.MemberToResponse(member), HttpStatus.CREATED);
     }
 
     @PostMapping("/refresh")
-    public String refreshToken(@RequestHeader String Refresh) {
-        System.out.println(Refresh+"입니");
+    public ResponseEntity refreshToken(@RequestHeader String Refresh) {
         String accessToken = service.getAccessToken(Refresh);
         response.addHeader("Authorization",accessToken);
-        return accessToken;
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PatchMapping("/{member-id}")

@@ -25,5 +25,6 @@ module.exports = {
         labelAttributes: ['htmlFor'],
       },
     ],
+    'no-nested-ternary': 0,
   },
 };

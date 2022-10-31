@@ -3,21 +3,26 @@ package ver37.Server.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ver37.Server.entity.Jwt;
 import ver37.Server.entity.Member;
+import ver37.Server.exception.CustomException;
+import ver37.Server.exception.ExceptionCode;
 import ver37.Server.repository.JwtRepository;
 import ver37.Server.repository.MemberRepository;
 import ver37.Server.security.auth.utils.CustomAuthorityUtils;
 
+import javax.persistence.EntityManager;
 import java.util.Date;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -25,7 +30,7 @@ public class MemberService {
     private final CustomAuthorityUtils authorityUtils;
 
     private final JwtRepository jwtRepository;
-
+    private final EntityManager em;
 
     @Transactional
     public Member createMember(Member member) {
@@ -54,10 +59,10 @@ public class MemberService {
         Member verifyMember = findVerifyMember(memberId);
         verifyMember.deleteMember(Member.MemberStatus.MEMBER_SLEEP);
     }
-
+    @Transactional
     public String getAccessToken(String refreshToken) {
 
-        Jwt token = jwtRepository.findRefreshToken(refreshToken).orElseThrow(() -> new RuntimeException("존재하지 않는 리프레쉬 토큰"));
+        Jwt token = jwtRepository.findRefreshToken(refreshToken).orElseThrow(() -> new CustomException(ExceptionCode.REFRESH_TOKEN_NOT_FOUND));
 
         String accessToken = JWT.create()
                 .withExpiresAt(new Date(System.currentTimeMillis() + (60000)))
@@ -65,12 +70,14 @@ public class MemberService {
                 .withClaim("username", token.getMember().getEmail())
                 .sign(Algorithm.HMAC256("zion"));
 
+        token.changeAccessToken(accessToken);
+//        em.flush();
+//        em.clear();  아마 트랜잭션 때문일거임
         return accessToken;
     }
-
+    @Transactional
     public void deleteToken(String refreshToken) {
-        Jwt jwt = jwtRepository.findRefreshToken(refreshToken).orElseThrow();
-        jwtRepository.delete(jwt);
+        jwtRepository.deleteJwtToken(refreshToken);
     }
 
 
@@ -78,14 +85,23 @@ public class MemberService {
     //존재하는 멤버 찾는 메서드
     public Member findVerifyMember(Long memberId) {
         //리펙터링 포인트 예외 처리로직으로 대체할것
-        return memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        return memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
 
     public void verifyEmail(Member member) {
         if (memberRepository.findByEmail(member.getEmail()).isPresent()) {
             //리펙터링 포인트 예외 처리로직으로 대체할것
-            throw new RuntimeException("이미 존재하는 회원입니다.");
+            throw new CustomException(ExceptionCode.DUPLICATE_MEMBER);
         }
+    }
+
+    public Member getMemberFromToken(String token) {
+        String pureToken = token.replace("Bearer ", "");
+
+        Jwt jwt = jwtRepository.findAccessToken(pureToken).orElseThrow(() -> new CustomException(ExceptionCode.MISMATCH_ACCESS_TOKEN));
+        Member verifyMember = findVerifyMember(jwt.getMember().getMemberId());
+
+        return verifyMember;
     }
 }

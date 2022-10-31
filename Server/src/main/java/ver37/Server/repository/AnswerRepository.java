@@ -5,5 +5,4 @@ import ver37.Server.entity.Answer;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
-    Answer findByAnswerId(long answerId);
 }
