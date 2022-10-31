@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import BoardList from './pages/BoardList';
 import BoardDetail from './pages/BoardDetail';
 import BoardWrite from './pages/BoardWrite';
@@ -7,9 +8,11 @@ import LogIn from './pages/LogIn';
 import SignUp from './pages/SignUp';
 import Nav from './components/Nav';
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Nav />
       <Routes>
         <Route path="/" element={<BoardList />} />
@@ -18,7 +21,7 @@ function App() {
         <Route path="/login" element={<LogIn />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
-    </>
+    </QueryClientProvider>
   );
 }
 
