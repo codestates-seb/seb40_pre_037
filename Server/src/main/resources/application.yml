@@ -1,15 +1,15 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://{AWS RDS Endpoint}:23306/test?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
-    username: {RDS Mysql Admin id}
-    password: {RDS Mysql Admin password}
+    url: jdbc:mysql://{}:{}/test?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    username: { }
+    password: { }
 
 
 
   jpa:
     hibernate:
-      ddl-auto: validate  # (1) ??? ?? ??
+      ddl-auto: validate # (1) ??? ?? ??
     show-sql: true      # (2) SQL ?? ??
     properties:
       hibernate:
@@ -34,6 +34,7 @@ server:
       charset: UTF-8
       enabled: true
     context-path: /
+  port: 3000
 
 mail:
   address:

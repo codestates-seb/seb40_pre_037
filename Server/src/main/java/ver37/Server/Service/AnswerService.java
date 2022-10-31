@@ -15,6 +15,8 @@ import ver37.Server.repository.PostRepository;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static ver37.Server.exception.ExceptionCode.MISMATCH_ACCESS_TOKEN;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -39,6 +41,9 @@ public class AnswerService {
     public Answer patchAnswer(Answer answer) {
         Answer verifyAnswer = findVerifyAnswer(answer.getAnswerId());
         Member memberByRequest = getMemberByAccess();
+        if (verifyAnswer.getMember() != memberByRequest) {
+            throw new CustomException(MISMATCH_ACCESS_TOKEN);
+        }
 
         verifyAnswer.changeSubject(answer.getAnswerBody());
         return verifyAnswer;
