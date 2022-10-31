@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+// import {useEffect} from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -63,26 +64,30 @@ function LoginComponent() {
 
   const onClickLogin = () => {
     axios
-      .post('https://f16f-49-172-251-241.jp.ngrok.io/member', null, {
-        params: {
-          email: inputEmail,
-          password: inputPassword,
-        },
+      .post('/members/login', {
+        username: inputEmail,
+        password: inputPassword,
       })
-      .then(res => console.log(res))
-      .catch();
+      .then(res => {
+        console.log(res);
+        if (res.headers.authorization) {
+          localStorage.setItem('login-token', res.headers.authorization);
+          localStorage.setItem('login-refresh', res.headers.refresh);
+        }
+      })
+      .catch(err => console.log(err));
   };
 
-  useEffect(() => {
-    axios
-      .get('https://f16f-49-172-251-241.jp.ngrok.io/member')
-      .then(res => {
-        console.log(res.data);
-      })
-      .catch(Error => {
-        console.log(Error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get('/members/login')
+  //     .then(res => {
+  //       console.log(res.data);
+  //     })
+  //     .catch(Error => {
+  //       console.log(Error);
+  //     });
+  // }, []);
 
   return (
     <LoginPage>
@@ -194,10 +199,7 @@ function LoginComponent() {
         </FormContainer>
       </LoginContainer>
       <div style={{ padding: '16px', fontSize: '14px', lineHeight: '17px' }}>
-        Don’t have an account?{' '}
-        <Link to="/signup">
-          <a href="/users/signup">Sign up</a>
-        </Link>
+        Don’t have an account? <a href="/signup">Sign up</a>
       </div>
     </LoginPage>
   );
