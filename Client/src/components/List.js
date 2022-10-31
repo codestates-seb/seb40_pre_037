@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const tags = ['linux', 'terminal', 'debian', 'gnome', 'ps1'];
-const offsetPage = 5;
+// const tags = ['linux', 'terminal', 'debian', 'gnome', 'ps1'];
+// const offsetPage = 5;
 
 const Container = styled.main`
   @media screen and (min-width: 1261px) {
@@ -173,7 +173,7 @@ const CreatedAt = styled.span`
   color: #525960;
 `;
 
-const Pagenation = styled.div`
+/* const Pagenation = styled.div`
   width: 100%;
   height: 145px;
   border-top: 1px solid rgb(219, 222, 224);
@@ -209,30 +209,35 @@ const BtnPage = styled.button`
     background-color: #d9d6dc;
     cursor: pointer;
   }
-`;
+`; */
 
 function List() {
   const [posts, setePosts] = useState([]);
-  const [pages, setPages] = useState([]);
-  const [curPage, setCurPage] = useState(1);
-  const [pageLasts, setPageLasts] = useState([]);
-  const pageAheads = [1, 2, 3];
+  // const [pages, setPages] = useState([]);
+  // const [curPage, setCurPage] = useState(1);
+  // const [pageLasts, setPageLasts] = useState([]);
+  // const pageAheads = [1, 2, 3];
 
   const fetchPosts = async () => {
-    const response = await axios.get('https://koreanjson.com/posts');
-    setePosts(response.data);
+    const response = await axios.get('/post/present?page=1&size=30', {
+      headers: {
+        'ngrok-skip-browser-warning': '111',
+      },
+    });
+    setePosts(response.data.data);
+    // console.log(response.data.data);
   };
 
-  const getPages = () => {
+  /* const getPages = () => {
     const arr = Array.from(
       { length: Math.ceil(posts.length / 30) + 1 },
       (_, i) => i,
     );
     setPages(arr);
     setPageLasts(arr.slice(-3));
-  };
+  }; */
 
-  const onClickPage = event => {
+  /* const onClickPage = event => {
     event.preventDefault();
     setCurPage(+event.target.innerText);
   };
@@ -245,15 +250,15 @@ function List() {
   const onClickNext = event => {
     event.preventDefault();
     setCurPage(prev => prev + 1);
-  };
+  }; */
 
   useEffect(() => {
     fetchPosts();
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     getPages();
-  }, [posts]);
+  }, [posts]); */
   return (
     <Container>
       <Section>
@@ -274,25 +279,26 @@ function List() {
       </Section>
       <Section>
         <Ul>
-          {posts.slice(0, 30).map(post => (
-            <Li key={post.id}>
+          {posts.map(post => (
+            <Li key={post.postId}>
               <SummaryLeft>
-                <span>{`${post.id} votes`}</span>
-                <span>{`${post.id} answers`}</span>
-                <span>{`${post.id} views`}</span>
+                <span>{`${post.likeCount} votes`}</span>
+                <span>{`${post.answerCount ?? '0'} answers`}</span>
+                <span>{`${post.viewCount} views`}</span>
               </SummaryLeft>
               <SummaryRight>
                 <Link to="/detail">
                   <TitleArticle>{post.title}</TitleArticle>
                 </Link>
                 <p>
-                  {post.content.length > 120
+                  {/* post.content.length > 120
                     ? `${post.content.split('').slice(0, 120).join('')}...`
-                    : post.content}
+          : post.content */}
+                  {post.body.replace(/(<([^>]+)>)/gi, '')}
                 </p>
                 <WrapperBot>
                   <WrapperBtn>
-                    {tags.map(tag => (
+                    {post.tags.map(tag => (
                       <BtnTag key={tag}>{tag}</BtnTag>
                     ))}
                   </WrapperBtn>
@@ -308,7 +314,7 @@ function List() {
             </Li>
           ))}
         </Ul>
-        <Pagenation>
+        {/* <Pagenation>
           <WrapperBtnPage>
             {pageAheads.includes(curPage) ? (
               <>
@@ -354,7 +360,7 @@ function List() {
               </>
             )}
           </WrapperBtnPage>
-        </Pagenation>
+        </Pagenation> */}
       </Section>
     </Container>
   );
