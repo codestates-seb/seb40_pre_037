@@ -26,5 +26,6 @@ module.exports = {
       },
     ],
     'no-nested-ternary': 0,
+    'react/jsx-props-no-spreading': 'off',
   },
 };

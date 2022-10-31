@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useForm } from 'react-hook-form';
 
 const LoginPage = styled.div`
   display: flex;
@@ -24,12 +25,7 @@ const LoginContainer = styled.div`
     rgba(0, 0, 0, 0.05) 0px 20px 48px 0px, rgba(0, 0, 0, 0.1) 0px 1px 4px 0px;
 `;
 
-const FormContainer = styled.form`
-  flex-direction: column;
-  margin: 0;
-`;
-
-const Formblock = styled.div`
+const Formblock = styled.form`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -41,45 +37,54 @@ const Formblock = styled.div`
       background-color: #0074cc;
     }
   }
-  > form {
+  > label {
     margin: 6px 0px;
-  }
-  > form > label {
     font-size: 15px;
+    font-weight: bold;
   }
 `;
 
+const Input = styled.input`
+  display: block;
+  height: 35px;
+  padding: 0;
+`;
+
+const Errormsg = styled.p`
+  display: block;
+  color: #d0393e;
+  margin: 2px 0px;
+  padding: 2px;
+  font-size: 12px;
+`;
+
 function LoginComponent() {
-  const [inputEmail, setInputEmail] = useState('');
-  const [inputPassword, setInputPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleEmail = e => {
-    setInputEmail(e.target.value);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  const handlePassword = e => {
-    setInputPassword(e.target.value);
-  };
-
-  const handleLogin = e => {
-    e.preventDefault();
-    const data = {
-      username: inputEmail,
-      password: inputPassword,
+  const onSubmit = async data => {
+    const userData = {
+      username: data.email,
+      password: data.password,
     };
+    console.log(userData);
 
     return axios
       .post('/members/login', data)
-      .then(response => {
-        console.log(response);
-        const accessToken = response.Authorization;
-        localStorage.setItem('access_token', accessToken);
+      .then(res => {
+        console.log(res);
+        if (res.headers.authorization) {
+          localStorage.setItem('login-token', res.headers.authorization);
+          localStorage.setItem('login-refresh', res.headers.refresh);
+        }
         navigate('/');
       })
-      .catch(error => {
-        console.log(error);
-      });
+      .catch(err => console.log(err));
   };
 
   return (
@@ -123,79 +128,77 @@ function LoginComponent() {
         </svg>{' '}
         Log in with GitHub{' '}
       </button>
-      <LoginContainer>
-        <FormContainer>
-          <Formblock>
-            <form className="d-flex gs4 gsy fd-column">
-              <label className="flex--item s-label" htmlFor="email">
-                Email
-              </label>
-              <div className="d-flex ps-relative">
-                <input
-                  className="flex--item s-input"
-                  type="email"
-                  id="email"
-                  value={inputEmail}
-                  onChange={handleEmail}
-                />
-              </div>
-            </form>
-            <svg
-              aria-hidden="true"
-              className="s-input-icon js-alert-icon d-none svg-icon iconAlertCircle"
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-            >
-              <path d="M9 17c-4.36 0-8-3.64-8-8 0-4.36 3.64-8 8-8 4.36 0 8 3.64 8 8 0 4.36-3.64 8-8 8ZM8 4v6h2V4H8Zm0 8v2h2v-2H8Z" />
-            </svg>
-            <p />
-          </Formblock>
-          {/* // */}
-          <Formblock>
-            <form className="d-flex gs4 gsy fd-column">
-              <label className="flex--item s-label" htmlFor="password">
-                Password
-              </label>
-              <div className="d-flex ps-relative">
-                <input
-                  className="flex--item s-input"
-                  type="password"
-                  id="password"
-                  value={inputPassword}
-                  onChange={handlePassword}
-                />
-              </div>
-            </form>
-            <svg
-              aria-hidden="true"
-              className="s-input-icon js-alert-icon d-none svg-icon iconAlertCircle"
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-            >
-              <path d="M9 17c-4.36 0-8-3.64-8-8 0-4.36 3.64-8 8-8 4.36 0 8 3.64 8 8 0 4.36-3.64 8-8 8ZM8 4v6h2V4H8Zm0 8v2h2v-2H8Z" />
-            </svg>
-            <p />
-          </Formblock>
-          {/* // */}
-          <Formblock>
-            <button
-              className="s-btn s-btn__primary"
-              type="button"
-              onClick={handleLogin}
-            >
-              Log in
-            </button>
-            <p />
-          </Formblock>
-        </FormContainer>
+      <LoginContainer onSubmit={handleSubmit(onSubmit)}>
+        <Formblock>
+          <label className="flex--item s-label" htmlFor="email">
+            Email
+          </label>
+          <Input
+            className="flex--item s-input"
+            type="email"
+            id="email"
+            {...register('email', {
+              required: true,
+            })}
+          />
+          {errors.email && errors.email.type === 'required' && (
+            <Errormsg>Email cannot be empty.</Errormsg>
+          )}
+          {/* 서버에서 응답 오류 받았을 때 나타내기 */}
+          {/* {조건식 넣기(
+            <Errormsg>The email or password is incorrect.</Errormsg>
+          )} */}
+          <svg
+            aria-hidden="true"
+            className="s-input-icon js-alert-icon d-none svg-icon iconAlertCircle"
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+          >
+            <path d="M9 17c-4.36 0-8-3.64-8-8 0-4.36 3.64-8 8-8 4.36 0 8 3.64 8 8 0 4.36-3.64 8-8 8ZM8 4v6h2V4H8Zm0 8v2h2v-2H8Z" />
+          </svg>
+          <p />
+        </Formblock>
+        <Formblock>
+          <label className="flex--item s-label" htmlFor="password">
+            Password
+          </label>
+          <Input
+            className="flex--item s-input"
+            type="password"
+            id="password"
+            {...register('password', {
+              required: true,
+            })}
+          />
+          {errors.password && errors.password.type === 'required' && (
+            <Errormsg>Password cannot be empty.</Errormsg>
+          )}
+          <svg
+            aria-hidden="true"
+            className="s-input-icon js-alert-icon d-none svg-icon iconAlertCircle"
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+          >
+            <path d="M9 17c-4.36 0-8-3.64-8-8 0-4.36 3.64-8 8-8 4.36 0 8 3.64 8 8 0 4.36-3.64 8-8 8ZM8 4v6h2V4H8Zm0 8v2h2v-2H8Z" />
+          </svg>
+          <p />
+        </Formblock>
+        <Formblock>
+          <button
+            className="s-btn s-btn__primary"
+            type="button"
+            onClick={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            Log in
+          </button>
+          <p />
+        </Formblock>
       </LoginContainer>
       <div style={{ padding: '16px', fontSize: '14px', lineHeight: '17px' }}>
-        Don’t have an account?{' '}
-        <Link to="/signup">
-          <a href="/users/signup">Sign up</a>
-        </Link>
+        Don’t have an account? <a href="/signup">Sign up</a>
       </div>
     </LoginPage>
   );
