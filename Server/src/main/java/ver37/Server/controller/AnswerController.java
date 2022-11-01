@@ -39,23 +39,28 @@ public class AnswerController {
         Answer answer = answerService.patchAnswer(answerMapper.answerPatchDtoToAnswer(patch));
         return new ResponseEntity(answerMapper.answerToResponse(answer), HttpStatus.OK);
     }
-    @GetMapping("/like")
-    public ResponseEntity getAllAnswer (@RequestParam("page") @Positive int page,
-                                         @RequestParam("size") @Positive int size) {
-        Page<Answer> allAnswer = answerService.getAllAnswer(page - 1, size);
-        List<Answer> content = allAnswer.getContent();
-        return new ResponseEntity(new MultiResponseDto<>(answerMapper.answersToResponses(content), allAnswer), HttpStatus.OK);
+//    @GetMapping("/like/")
+//    public ResponseEntity getAllAnswer (@RequestParam("page") @Positive int page,
+//                                         @RequestParam("size") @Positive int size) {
+//        Page<Answer> allAnswer = answerService.getAllAnswer(page - 1, size);
+//        List<Answer> content = allAnswer.getContent();
+//        return new ResponseEntity(new MultiResponseDto<>(answerMapper.answersToResponses(content), allAnswer), HttpStatus.OK);
+//    }
+    @GetMapping("/{post-id}")
+    public ResponseEntity takeAnswers(@PathVariable ("post-id") @Positive Long postId) {
+        List<Answer> answers = answerService.getAnswers(postId);
+        return new ResponseEntity(answerMapper.answersToResponses(answers), HttpStatus.OK);
     }
     @PostMapping("/like/up/{answer-id}")
     public ResponseEntity likeUp(@PathVariable("answer-id") Long answerId) {
         Answer answer = answerService.likeChange(answerId, 1);
-        return new ResponseEntity(answerMapper.answerToResponse(answer),HttpStatus.ACCEPTED);
+        return new ResponseEntity(answerMapper.answerToResponse(answer), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/like/down/{answer-id}")
     public ResponseEntity likeDown(@PathVariable("answer-id") Long answerId) {
         Answer answer = answerService.likeChange(answerId, -1);
-        return new ResponseEntity(answerMapper.answerToResponse(answer),HttpStatus.ACCEPTED);
+        return new ResponseEntity(answerMapper.answerToResponse(answer), HttpStatus.ACCEPTED);
     }
 
     //getMapping은 한번에 다 보내주는 걸로 연관된 모든 answer를 보내준다.

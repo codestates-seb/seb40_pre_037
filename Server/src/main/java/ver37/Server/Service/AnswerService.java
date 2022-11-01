@@ -1,9 +1,7 @@
 package ver37.Server.Service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ver37.Server.entity.Answer;
@@ -15,7 +13,10 @@ import ver37.Server.repository.PostRepository;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 import static ver37.Server.exception.ExceptionCode.MISMATCH_ACCESS_TOKEN;
+import static ver37.Server.exception.ExceptionCode.POST_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +52,12 @@ public class AnswerService {
 
     public Page<Answer> getAllAnswer(int page, int size) {
         return answerRepository.findAll(PageRequest.of(page, size, Sort.by("likeCount").descending()));
+    }
+
+    public List<Answer> getAnswers(Long postId) {
+        List<Answer> answers = answerRepository.answerFromPost(postId).orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+
+        return answers;
     }
 
     private Answer findVerifyAnswer(Long answerId) {
