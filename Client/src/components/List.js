@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-
-const tags = ['linux', 'terminal', 'debian', 'gnome', 'ps1'];
-const offsetPage = 5;
+import { Link, useNavigate } from 'react-router-dom';
 
 const Container = styled.main`
   @media screen and (min-width: 1261px) {
@@ -215,21 +212,34 @@ function List() {
   const [posts, setePosts] = useState([]);
   const [pages, setPages] = useState([]);
   const [curPage, setCurPage] = useState(1);
-  const [pageLasts, setPageLasts] = useState([]);
-  const pageAheads = [1, 2, 3];
+  const [sortBy, setSortBy] = useState('present');
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+
+  const navigate = useNavigate();
 
   const fetchPosts = async () => {
-    const response = await axios.get('https://koreanjson.com/posts');
-    setePosts(response.data);
+    const response = await axios.get(
+      `/post/${sortBy}?page=${curPage}&size=10`,
+      {
+        headers: {
+          'ngrok-skip-browser-warning': '111',
+        },
+      },
+    );
+    // console.log(response.data.data);
+    setePosts(response.data.data);
+    setTotalPages(response.data.pageInfo.totalPages);
+    setTotalQuestions(response.data.pageInfo.totalElements);
   };
 
   const getPages = () => {
-    const arr = Array.from(
-      { length: Math.ceil(posts.length / 30) + 1 },
-      (_, i) => i,
-    );
+    const arr = Array.from({ length: totalPages + 1 }, (_, i) => i);
     setPages(arr);
-    setPageLasts(arr.slice(-3));
+  };
+
+  const navigator = () => {
+    navigate(`?sortBy=${sortBy}&page=${curPage}`);
   };
 
   const onClickPage = event => {
@@ -247,13 +257,32 @@ function List() {
     setCurPage(prev => prev + 1);
   };
 
+  const onClickNewest = event => {
+    event.preventDefault();
+    setSortBy('present');
+  };
+
+  const onClickViews = event => {
+    event.preventDefault();
+    setSortBy('view');
+  };
+
+  const onClickVotes = event => {
+    event.preventDefault();
+    setSortBy('like');
+  };
+
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [curPage, sortBy]);
 
   useEffect(() => {
     getPages();
   }, [posts]);
+
+  useEffect(() => {
+    navigator();
+  }, [sortBy, curPage]);
   return (
     <Container>
       <Section>
@@ -264,43 +293,42 @@ function List() {
           </Link>
         </Wrapper>
         <Wrapper>
-          <NumOfArticle>23,156,270 questions</NumOfArticle>
+          <NumOfArticle>{`${totalQuestions} questions`}</NumOfArticle>
           <div>
-            <BtnSort>Newest</BtnSort>
-            <BtnSort>Views</BtnSort>
-            <BtnSort>Votes</BtnSort>
+            <BtnSort onClick={onClickNewest}>Newest</BtnSort>
+            <BtnSort onClick={onClickViews}>Views</BtnSort>
+            <BtnSort onClick={onClickVotes}>Votes</BtnSort>
           </div>
         </Wrapper>
       </Section>
       <Section>
         <Ul>
-          {posts.slice(0, 30).map(post => (
-            <Li key={post.id}>
+          {posts.map(post => (
+            <Li key={post.postId}>
               <SummaryLeft>
-                <span>{`${post.id} votes`}</span>
-                <span>{`${post.id} answers`}</span>
-                <span>{`${post.id} views`}</span>
+                <span>{`${post.likeCount} votes`}</span>
+                <span>{`${post.answerCount ?? '0'} answers`}</span>
+                <span>{`${post.viewCount} views`}</span>
               </SummaryLeft>
               <SummaryRight>
-                <Link to="/detail">
+                <Link to={`/detail?postId=${post.postId}`}>
                   <TitleArticle>{post.title}</TitleArticle>
                 </Link>
                 <p>
-                  {post.content.length > 120
+                  {/* post.content.length > 120
                     ? `${post.content.split('').slice(0, 120).join('')}...`
-                    : post.content}
+          : post.content */}
+                  {post.body.replace(/(<([^>]+)>)/gi, '')}
                 </p>
                 <WrapperBot>
                   <WrapperBtn>
-                    {tags.map(tag => (
+                    {post.tags.map(tag => (
                       <BtnTag key={tag}>{tag}</BtnTag>
                     ))}
                   </WrapperBtn>
                   <WrapperMeta>
                     <Img src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1" />
-                    <Link to="user/:id">
-                      <Author>Thomas</Author>
-                    </Link>
+                    <Author>{post.memberName}</Author>
                     <CreatedAt>asked 12 mins ago</CreatedAt>
                   </WrapperMeta>
                 </WrapperBot>
@@ -310,49 +338,13 @@ function List() {
         </Ul>
         <Pagenation>
           <WrapperBtnPage>
-            {pageAheads.includes(curPage) ? (
-              <>
-                {pages.slice(1, 6).map(pageNum => (
-                  <BtnPage key={pageNum} onClick={onClickPage}>
-                    {pageNum}
-                  </BtnPage>
-                ))}
-                <span>...</span>
-                <BtnPage onClick={onClickPage}>
-                  {pages[pages.length - 1]}
-                </BtnPage>
-                <BtnPage onClick={onClickNext}>Next</BtnPage>
-              </>
-            ) : pageLasts.includes(curPage) ? (
-              <>
-                <BtnPage onClick={onClickPrev}>Prev</BtnPage>
-                <BtnPage onClick={onClickPage}>{pages[1]}</BtnPage>
-                <span>...</span>
-                {pages.slice(-5).map(pageNum => (
-                  <BtnPage key={pageNum} onClick={onClickPage}>
-                    {pageNum}
-                  </BtnPage>
-                ))}
-              </>
-            ) : (
-              <>
-                <BtnPage onClick={onClickPrev}>Prev</BtnPage>
-                <BtnPage onClick={onClickPage}>{pages[1]}</BtnPage>
-                <span>...</span>
-                {pages
-                  .slice(curPage - 2, curPage + offsetPage - 2)
-                  .map(pageNum => (
-                    <BtnPage key={pageNum} onClick={onClickPage}>
-                      {pageNum}
-                    </BtnPage>
-                  ))}
-                <span>...</span>
-                <BtnPage onClick={onClickPage}>
-                  {pages[pages.length - 1]}
-                </BtnPage>
-                <BtnPage onClick={onClickNext}>Next</BtnPage>
-              </>
-            )}
+            <BtnPage onClick={onClickPrev}>Prev</BtnPage>
+            {pages.slice(1).map(pageNum => (
+              <BtnPage key={pageNum} onClick={onClickPage}>
+                {pageNum}
+              </BtnPage>
+            ))}
+            <BtnPage onClick={onClickNext}>Next</BtnPage>
           </WrapperBtnPage>
         </Pagenation>
       </Section>
