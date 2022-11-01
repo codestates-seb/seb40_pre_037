@@ -6,10 +6,11 @@
 - 추후 수정
 */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import * as Icons from '@stackoverflow/stacks-icons';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 import AsideRight from './AsideRight';
 import TextEditor from './TextEditor';
@@ -140,10 +141,47 @@ const MarginWrapper = styled.div`
 
 export default function Details() {
   const navigate = useNavigate();
+  const [post, setPost] = useState();
 
   const handleNewAnswer = () => {
     navigate('/write');
   };
+
+  const getQuestion = id => {
+    const header = {
+      headers: {
+        'ngrok-skip-browser-warning': '111',
+      },
+    };
+    return axios
+      .get(`/post/4`, header)
+      .then(res => {
+        setPost(res.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const getAnswer = () => {
+    const header = {
+      headers: {
+        'ngrok-skip-browser-warning': '111',
+      },
+    };
+    return axios
+      .get(`/post/4`, header)
+      .then(res => {
+        setPost(res.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getQuestion(4);
+  }, []);
 
   return (
     <DetailContainer>
@@ -151,12 +189,12 @@ export default function Details() {
         <TitleWrapper className="s-page-title wrap">
           <Title className="s-page-title--text">
             <H1Container className="s-page-title--header">
-              Possible typo in openwebbeans.properties in openejb-core.jar?
+              {post ? post.title : ''}
             </H1Container>
             <p className="s-page-title--description">
               <SubInfo>Asked today</SubInfo>
               <SubInfo>Modified today</SubInfo>
-              <SubInfo>Viewed 6 times</SubInfo>
+              <SubInfo>Viewed {post ? post.viewCount : '0'} times</SubInfo>
             </p>
           </Title>
           <ButtonWrapper>
@@ -187,27 +225,36 @@ export default function Details() {
                 </ArrowContainer>
                 <TextAreaContainer>
                   <TextContainer className="s-textarea__m">
-                    With react-router I can use the Link element to create links
-                    which are natively handled by react router. I see internally
-                    it calls this.context.transitionTo(...). I want to do a
-                    navigation. Not from a link, but from a dropdown selection
-                    (as an example). How can I do this in code? What is
-                    this.context? I saw the Navigation mixin, but can I do this
-                    without mixins?
+                    {post ? (
+                      <div dangerouslySetInnerHTML={{ __html: post.body }} />
+                    ) : (
+                      <div />
+                    )}
                   </TextContainer>
                   <TagContainer>
                     <Tags className="d-flex g4">
-                      <div className="s-tag">jquery</div>
-                      <div className="s-tag">javascript</div>
-                      <div className="s-tag">android</div>
-                      <div className="s-tag is-selected">razor</div>
+                      {post ? (
+                        post.tags.map(el => {
+                          return (
+                            <div key={el} className="s-tag">
+                              {el}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div />
+                      )}
+                      {/* <div className="s-tag is-selected">razor</div> */}
                     </Tags>
                   </TagContainer>
                 </TextAreaContainer>
               </TextWrapper>
               <NameSpace>
                 <div className="s-user-card s-user-card__highlighted">
-                  <time className="s-user-card--time">3 minutes ago</time>
+                  <time className="s-user-card--time">
+                    asked{' '}
+                    {post ? new Date(post.createdAt).toLocaleDateString() : ''}
+                  </time>
                   <div className="s-avatar s-avatar__32 s-user-card--avatar">
                     <img className="s-avatar--image" alt="dk" src="…" />
                   </div>
@@ -254,7 +301,10 @@ export default function Details() {
               </ContentContainer>
               <NameSpace>
                 <div className="s-user-card">
-                  <time className="s-user-card--time">1 minutes ago</time>
+                  <time className="s-user-card--time">
+                    answered{' '}
+                    {post ? new Date(post.createdAt).toLocaleDateString() : ''}
+                  </time>
                   <div className="s-avatar s-avatar__32 s-user-card--avatar">
                     <img className="s-avatar--image" alt="dk" src="…" />
                   </div>
