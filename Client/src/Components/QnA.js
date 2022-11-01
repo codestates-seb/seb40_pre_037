@@ -64,6 +64,7 @@ const Button = styled.button`
   height: 40px;
   font-size: 13px;
   line-height: 15px;
+  background-color: var(--blue-500);
 `;
 
 const SideWrapper = styled.div`
@@ -146,7 +147,8 @@ export default function Details() {
   const [postInfo, setPostInfo] = useState({});
   const [update, setUpdate] = useState(false);
   const token = localStorage.getItem('login-token');
-  const detailId = 1;
+  const urlParams = new URL(window.location.href).searchParams;
+  const detailId = urlParams.get('postId');
 
   const handleNewAnswer = () => {
     navigate('/write');
