@@ -61,7 +61,6 @@ const Errormsg = styled.p`
 function LoginComponent() {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState(false);
-
   const {
     register,
     handleSubmit,
