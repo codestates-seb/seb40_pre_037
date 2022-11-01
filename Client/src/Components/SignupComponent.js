@@ -127,16 +127,13 @@ function SignupComponent() {
     watch,
   } = useForm();
 
-  const onSubmit = async data => {
-    const userData = {
-      email: data.Email,
-      name: data.name,
-      password: data.password,
-    };
-    console.log(userData);
-
-    return axios
-      .post('/members', data)
+  const onSubmit = data => {
+    axios
+      .post('/members', {
+        email: data.Email,
+        name: data.name,
+        password: data.password,
+      })
       .then(response => {
         console.log(response);
         navigate('/login');

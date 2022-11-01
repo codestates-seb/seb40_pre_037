@@ -4,7 +4,8 @@ module.exports = function (app) {
   app.use(
     ['/members', '/post', '/answers'],
     createProxyMiddleware({
-      target: 'ec2-15-164-164-179.ap-northeast-2.compute.amazonaws.com:8080',
+      target:
+        'http://ec2-15-164-164-179.ap-northeast-2.compute.amazonaws.com:8080',
       changeOrigin: true,
     }),
   );
