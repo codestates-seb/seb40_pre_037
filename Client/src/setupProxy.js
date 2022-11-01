@@ -4,8 +4,7 @@ module.exports = function (app) {
   app.use(
     '/members',
     createProxyMiddleware({
-      target:
-        'http://ec2-15-164-164-179.ap-northeast-2.compute.amazonaws.com:8080',
+      target: 'https://123c-49-172-251-241.jp.ngrok.io/',
       changeOrigin: true,
     }),
   );
