@@ -68,14 +68,11 @@ function LoginComponent() {
   } = useForm();
 
   const onSubmit = async data => {
-    const userData = {
-      username: data.email,
-      password: data.password,
-    };
-    console.log(userData);
-
-    return axios
-      .post('/members/login', data)
+    axios
+      .post('/members/login', {
+        username: data.email,
+        password: data.password,
+      })
       .then(res => {
         console.log(res);
         if (res.headers.authorization) {
