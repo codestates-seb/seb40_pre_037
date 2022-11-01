@@ -2,9 +2,9 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function (app) {
   app.use(
-    '/members',
+    ['/members', '/post'],
     createProxyMiddleware({
-      target: 'https://dbee-49-172-251-241.jp.ngrok.io',
+      target: 'ec2-15-164-164-179.ap-northeast-2.compute.amazonaws.com:8080',
       changeOrigin: true,
     }),
   );

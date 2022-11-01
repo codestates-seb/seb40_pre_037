@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useForm } from 'react-hook-form';
 
 const PageLayout = styled.div`
   width: 100%;
@@ -40,7 +41,7 @@ const SignUpContainer = styled.div`
     rgba(0, 0, 0, 0.05) 0px 20px 48px 0px, rgba(0, 0, 0, 0.1) 0px 1px 4px 0px;
 `;
 
-const Formblock = styled.div`
+const Formblock = styled.form`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -52,11 +53,10 @@ const Formblock = styled.div`
       background-color: #0074cc;
     }
   }
-  > form {
+  > label {
     margin: 6px 0px;
-  }
-  > form > label {
     font-size: 15px;
+    font-weight: bold;
   }
 `;
 
@@ -94,19 +94,46 @@ const LeftText = styled.div`
   align-items: center;
 `;
 
+const Input = styled.input`
+  display: block;
+  width: 260px;
+  height: 35px;
+  padding: 0;
+`;
+
+const Errormsg = styled.p`
+  display: block;
+  color: #d0393e;
+  margin: 2px 0px;
+  padding: 2px;
+  font-size: 12px;
+`;
+
+const Errormsg2 = styled.p`
+  display: block;
+  color: #d0393e;
+  margin: 2px 0px;
+  padding: 2px 2px 2px 20px;
+  font-size: 12px;
+`;
+
 function SignupComponent() {
-  const [inputName, setInputName] = useState('');
-  const [inputEmail, setInputEmail] = useState('');
-  const [inputPassword, setInputPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const data = {
-      email: inputEmail,
-      name: inputName,
-      password: inputPassword,
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
+
+  const onSubmit = async data => {
+    const userData = {
+      email: data.Email,
+      name: data.name,
+      password: data.password,
     };
+    console.log(userData);
 
     return axios
       .post('/members', data)
@@ -116,7 +143,6 @@ function SignupComponent() {
       })
       .catch(error => {
         console.log(error);
-        navigate('/');
       });
   };
 
@@ -185,54 +211,86 @@ function SignupComponent() {
           </svg>{' '}
           Sign up with GitHub{' '}
         </button>
-        <SignUpContainer>
+        <SignUpContainer onSubmit={handleSubmit(onSubmit)}>
           <Formblock>
-            <form className="d-flex gs4 gsy fd-column">
-              <label className="flex--item s-label" htmlFor="Display name">
-                Display name
-              </label>
-              <div className="d-flex ps-relative">
-                <input
-                  className="flex--item s-input"
-                  type="name"
-                  id="Display name"
-                  value={inputName}
-                  onChange={e => setInputName(e.target.value)}
-                />
-              </div>
-            </form>
+            <label htmlFor="Display name">Display name</label>
+            <Input
+              className="flex--item s-input"
+              type="name"
+              id="Display name"
+              {...register('name', {
+                required: true,
+              })}
+            />
+            {errors.name && errors.name.type === 'required' && (
+              <Errormsg>name cannot be empty.</Errormsg>
+            )}
           </Formblock>
           <Formblock>
-            <form className="d-flex gs4 gsy fd-column">
-              <label className="flex--item s-label" htmlFor="Email">
-                Email
-              </label>
-              <div className="d-flex ps-relative">
-                <input
-                  className="flex--item s-input"
-                  type="Email"
-                  id="Email"
-                  value={inputEmail}
-                  onChange={e => setInputEmail(e.target.value)}
-                />
-              </div>
-            </form>
+            <label htmlFor="Email">Email</label>
+            <Input
+              className="flex--item s-input"
+              type="Email"
+              id="Email"
+              {...register('Email', {
+                required: true,
+                validate: {
+                  emailcheck: value =>
+                    (value &&
+                      /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g.test(
+                        value,
+                      )) ||
+                    `${watch('Email')} is not a valid email address`,
+                },
+              })}
+            />
+            {errors.Email && errors.Email.type === 'required' && (
+              <Errormsg>Email cannot be empty.</Errormsg>
+            )}
+            {errors.Email && errors.Email.type === 'emailcheck' && (
+              <Errormsg>{errors.Email.message}</Errormsg>
+            )}
           </Formblock>
           <Formblock>
-            <form className="d-flex gs4 gsy fd-column">
-              <label className="flex--item s-label" htmlFor="password">
-                Password
-              </label>
-              <div className="d-flex ps-relative">
-                <input
-                  className="flex--item s-input"
-                  type="password"
-                  id="password"
-                  value={inputPassword}
-                  onChange={e => setInputPassword(e.target.value)}
-                />
-              </div>
-            </form>
+            <label htmlFor="password">Password</label>
+            <Input
+              className="flex--item s-input"
+              type="password"
+              id="password"
+              {...register('password', {
+                required: true,
+                validate: {
+                  numcheck: value =>
+                    (value && /\d/.test(value)) ||
+                    'Please add one of the following things to make your password stronger:',
+                  lettercheck: value =>
+                    (value && /[a-zA-Z]/.test(value)) ||
+                    'Please add one of the following things to make your password stronger:',
+                },
+
+                minLength: 8,
+              })}
+            />
+            {errors.password && errors.password.type === 'required' && (
+              <Errormsg>Password cannot be empty.</Errormsg>
+            )}
+            {errors.password && errors.password.type === 'numcheck' && (
+              <Errormsg>{errors.password.message}</Errormsg>
+            )}
+            {errors.password && errors.password.type === 'numcheck' && (
+              <Errormsg2>• numbers</Errormsg2>
+            )}
+            {errors.password && errors.password.type === 'lettercheck' && (
+              <Errormsg>{errors.password.message}</Errormsg>
+            )}
+            {errors.password && errors.password.type === 'lettercheck' && (
+              <Errormsg2>• letters</Errormsg2>
+            )}
+            {errors.password && errors.password.type === 'minLength' && (
+              <Errormsg>
+                Must contain at least {8 - watch('password').length} characters.
+              </Errormsg>
+            )}
           </Formblock>
           <p
             style={{
@@ -251,7 +309,8 @@ function SignupComponent() {
             <button
               className="s-btn s-btn__primary"
               type="button"
-              onClick={handleSubmit}
+              onClick={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(onSubmit)}
             >
               Sign up
             </button>
@@ -259,10 +318,7 @@ function SignupComponent() {
           </Formblock>
         </SignUpContainer>
         <div style={{ padding: '16px', fontSize: '14px', lineHeight: '17px' }}>
-          Already have an account?{' '}
-          <Link to="/login">
-            <a href="/users/signup">Log in</a>
-          </Link>
+          Already have an account? <a href="/login">Log in</a>
         </div>
       </SignUpPage>
     </PageLayout>
