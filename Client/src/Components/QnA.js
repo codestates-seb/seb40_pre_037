@@ -142,6 +142,11 @@ const MarginWrapper = styled.div`
 export default function Details() {
   const navigate = useNavigate();
   const [post, setPost] = useState();
+  const [answer, setAnswer] = useState();
+  const [postInfo, setPostInfo] = useState({});
+  const [update, setUpdate] = useState(false);
+  const token = localStorage.getItem('login-token');
+  const detailId = 1;
 
   const handleNewAnswer = () => {
     navigate('/write');
@@ -154,34 +159,97 @@ export default function Details() {
       },
     };
     return axios
-      .get(`/post/4`, header)
+      .get(`/post/${id}`, header)
       .then(res => {
         setPost(res.data);
+        return res.data;
       })
       .catch(error => {
         console.log(error);
       });
   };
 
-  const getAnswer = () => {
+  const getAnswer = id => {
     const header = {
       headers: {
         'ngrok-skip-browser-warning': '111',
       },
     };
     return axios
-      .get(`/post/4`, header)
+      .get(`/answers/${id}`, header)
       .then(res => {
-        setPost(res.data);
+        setAnswer(res.data);
+        return res.data;
       })
       .catch(error => {
         console.log(error);
       });
   };
 
+  const countUpQ = id => {
+    const header = {
+      headers: { authorization: `${token}` },
+    };
+    axios.post(`/post/like/up/${id}`, {}, header).catch(error => {
+      console.log(error);
+    });
+    setUpdate(true);
+  };
+  const countDownQ = id => {
+    const header = {
+      headers: { authorization: token },
+    };
+    axios.post(`/post/like/down/${id}`, {}, header).catch(error => {
+      console.log(error);
+    });
+    setUpdate(true);
+  };
+
+  const countUpA = id => {
+    const header = {
+      headers: { authorization: `${token}` },
+    };
+    axios.post(`/answers/like/up/${id}`, {}, header).catch(error => {
+      console.log(error);
+    });
+    setUpdate(true);
+  };
+  const countDownA = id => {
+    const header = {
+      headers: { authorization: token },
+    };
+    axios.post(`/answers/like/down/${id}`, {}, header).catch(error => {
+      console.log(error);
+    });
+    setUpdate(true);
+  };
+
   useEffect(() => {
-    getQuestion(4);
-  }, []);
+    if (update) {
+      getQuestion(detailId).then(res => {
+        const last = new Date(res.createdAt);
+        const now = new Date();
+        const year = now.getFullYear() - last.getFullYear();
+        let month = now.getMonth() + 1 - (last.getMonth() + 1);
+        let day = now.getDate() - last.getDate();
+        if (day < 0) {
+          day += [1, 3, 5, 7, 8, 10, 12].includes(month)
+            ? 31
+            : month === 2
+            ? 28
+            : 30;
+          month -= 1;
+        }
+        const ask = `${year === 0 ? '' : `${year} years`} ${
+          month === 0 ? '' : `${month} months`
+        } ${day === 0 ? 'today' : `${day} days`}`;
+        setPostInfo({ ...postInfo, ask, mod: 0 });
+      });
+      getAnswer(detailId);
+
+      setUpdate(false);
+    }
+  }, [update]);
 
   return (
     <DetailContainer>
@@ -192,8 +260,8 @@ export default function Details() {
               {post ? post.title : ''}
             </H1Container>
             <p className="s-page-title--description">
-              <SubInfo>Asked today</SubInfo>
-              <SubInfo>Modified today</SubInfo>
+              <SubInfo>Asked {postInfo.ask}</SubInfo>
+              <SubInfo>Modified {postInfo.mod}</SubInfo>
               <SubInfo>Viewed {post ? post.viewCount : '0'} times</SubInfo>
             </p>
           </Title>
@@ -214,11 +282,15 @@ export default function Details() {
               <TextWrapper>
                 <ArrowContainer>
                   <div
+                    role="presentation"
                     className="fc-black-200"
+                    onClick={() => countUpQ(detailId)}
                     dangerouslySetInnerHTML={{ __html: Icons.IconArrowUpLg }}
                   />
-                  <div>2</div>
+                  <div>{post ? post.likeCount : ''}</div>
                   <div
+                    role="presentation"
+                    onClick={() => countDownQ(detailId)}
                     className="fc-black-200"
                     dangerouslySetInnerHTML={{ __html: Icons.IconArrowDownLg }}
                   />
@@ -259,60 +331,74 @@ export default function Details() {
                     <img className="s-avatar--image" alt="dk" src="…" />
                   </div>
                   <div className="s-user-card--info">
-                    <span className="s-user-card--link">Paul Sight</span>
+                    <span className="s-user-card--link">
+                      {post ? post.memberName : ''}
+                    </span>
                   </div>
                 </div>
               </NameSpace>
             </ArticleWrapper>
+
             <AnswerContainer>
               <H2 className="answers-subheader d-flex ai-center mb8">
-                2 Answers
+                {post ? post.answerCount : 0} Answers
               </H2>
-              <ContentContainer>
-                <ArticleWrapper>
-                  <TextWrapper>
-                    <ArrowContainer>
-                      <div
-                        className="fc-black-200"
-                        dangerouslySetInnerHTML={{
-                          __html: Icons.IconArrowUpLg,
-                        }}
-                      />
-                      <div>1</div>
-                      <div
-                        className="fc-black-200"
-                        dangerouslySetInnerHTML={{
-                          __html: Icons.IconArrowDownLg,
-                        }}
-                      />
-                    </ArrowContainer>
-                    <TextAreaContainer>
-                      <TextContainer className="s-textarea__m">
-                        {`React Router is mostly a wrapper around the history library.
-              history handles interaction with the browser's window.history for
-              you with its browser and hash histories. It also provides a memory
-              history which is useful for environments that don't have a global
-              history. This is particularly useful in mobile app development
-              (react-native) and unit testing with Node.`}
-                      </TextContainer>
-                    </TextAreaContainer>
-                  </TextWrapper>
-                </ArticleWrapper>
-              </ContentContainer>
-              <NameSpace>
-                <div className="s-user-card">
-                  <time className="s-user-card--time">
-                    answered{' '}
-                    {post ? new Date(post.createdAt).toLocaleDateString() : ''}
-                  </time>
-                  <div className="s-avatar s-avatar__32 s-user-card--avatar">
-                    <img className="s-avatar--image" alt="dk" src="…" />
-                  </div>
-                  <div className="s-user-card--info">
-                    <span className="s-user-card--link">Paul Sight</span>
-                  </div>
-                </div>
-              </NameSpace>
+              {answer ? (
+                answer.map(el => {
+                  return (
+                    <div key={el.answerId}>
+                      <ContentContainer>
+                        <ArticleWrapper>
+                          <TextWrapper>
+                            <ArrowContainer>
+                              <div
+                                role="presentation"
+                                onClick={() => countUpA(el.answerId)}
+                                className="fc-black-200"
+                                dangerouslySetInnerHTML={{
+                                  __html: Icons.IconArrowUpLg,
+                                }}
+                              />
+                              <div>{el.likeCount}</div>
+                              <div
+                                role="presentation"
+                                onClick={() => countDownA(el.answerId)}
+                                className="fc-black-200"
+                                dangerouslySetInnerHTML={{
+                                  __html: Icons.IconArrowDownLg,
+                                }}
+                              />
+                            </ArrowContainer>
+                            <TextAreaContainer>
+                              <TextContainer className="s-textarea__m">
+                                {el.answerBody}
+                              </TextContainer>
+                            </TextAreaContainer>
+                          </TextWrapper>
+                        </ArticleWrapper>
+                      </ContentContainer>
+                      <NameSpace>
+                        <div className="s-user-card">
+                          <time className="s-user-card--time">
+                            answered{' '}
+                            {new Date(el.createdAt).toLocaleDateString()}
+                          </time>
+                          <div className="s-avatar s-avatar__32 s-user-card--avatar">
+                            <img className="s-avatar--image" alt="dk" src="…" />
+                          </div>
+                          <div className="s-user-card--info">
+                            <span className="s-user-card--link">
+                              {el.memberName}
+                            </span>
+                          </div>
+                        </div>
+                      </NameSpace>
+                    </div>
+                  );
+                })
+              ) : (
+                <div />
+              )}
             </AnswerContainer>
             <H2 className="space">Your Answer</H2>
             <TextEditor />
