@@ -6,10 +6,12 @@
 - 추후 수정
 */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import * as Icons from '@stackoverflow/stacks-icons';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import jwt from 'jwt-decode';
 
 import AsideRight from './AsideRight';
 import TextEditor from './TextEditor';
@@ -63,6 +65,7 @@ const Button = styled.button`
   height: 40px;
   font-size: 13px;
   line-height: 15px;
+  background-color: var(--blue-500);
 `;
 
 const SideWrapper = styled.div`
@@ -138,12 +141,198 @@ const MarginWrapper = styled.div`
   margin-top: -75px;
 `;
 
+const FunctionContainer = styled.div`
+  color: gray;
+  display: flex;
+  flex-direction: row;
+  & div {
+    margin-right: 10px;
+  }
+`;
+
 export default function Details() {
   const navigate = useNavigate();
+  const [post, setPost] = useState();
+  const [answer, setAnswer] = useState();
+  const [postInfo, setPostInfo] = useState({});
+  const [update, setUpdate] = useState(true);
+  const [value, setValue] = useState('');
+  const [sendAnswer, setSendAnswer] = useState(false);
+  const [ansIds, setAnsIds] = useState();
+  const token = localStorage.getItem('login-token');
+  const urlParams = new URL(window.location.href).searchParams;
+  const detailId = urlParams.get('postId');
 
   const handleNewAnswer = () => {
     navigate('/write');
   };
+
+  const getQuestion = id => {
+    const header = {
+      headers: {
+        'ngrok-skip-browser-warning': '111',
+      },
+    };
+    return axios
+      .get(`/post/${id}`, header)
+      .then(res => {
+        setPost(res.data);
+        return res.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const getAnswer = id => {
+    const header = {
+      headers: {
+        'ngrok-skip-browser-warning': '111',
+      },
+    };
+    return axios
+      .get(`/answers/${id}`, header)
+      .then(res => {
+        setAnswer(res.data);
+        return res.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const getAnsId = res => {
+    const ids = res.map(el => el.answerId);
+    return ids;
+  };
+
+  const countUpQ = id => {
+    const header = {
+      headers: { authorization: `${token}` },
+    };
+    axios.post(`/post/like/up/${id}`, {}, header).catch(error => {
+      console.log(error);
+    });
+    setUpdate(true);
+  };
+
+  const countDownQ = id => {
+    const header = {
+      headers: { authorization: token },
+    };
+    axios.post(`/post/like/down/${id}`, {}, header).catch(error => {
+      console.log(error);
+    });
+    setUpdate(true);
+  };
+
+  const countUpA = id => {
+    const header = {
+      headers: { authorization: `${token}` },
+    };
+    axios.post(`/answers/like/up/${id}`, {}, header).catch(error => {
+      console.log(error);
+    });
+    setUpdate(true);
+  };
+
+  const countDownA = id => {
+    const header = {
+      headers: { authorization: token },
+    };
+    axios.post(`/answers/like/down/${id}`, {}, header).catch(error => {
+      console.log(error);
+    });
+    setUpdate(true);
+  };
+
+  const postAnswer = () => {
+    const header = {
+      headers: { authorization: token },
+    };
+    if (sendAnswer) {
+      axios
+        .post(`/answers`, { postId: +detailId, answerBody: value }, header)
+        .catch(error => {
+          console.log(error);
+        });
+      setUpdate(true);
+    }
+  };
+
+  const deleteQuestion = () => {
+    const header = {
+      headers: { authorization: token },
+    };
+    axios.delete(`/여기 url 자리에요`, header).catch(e => console.log(e));
+    setUpdate(true);
+  };
+
+  const editQuestion = () => {
+    navigate(`/write/?postId=${detailId}`);
+  };
+
+  const callFunction = () => {
+    const decode = jwt(token.split(' ')[1]);
+    if (decode.nickname !== post.memberName) {
+      return '';
+    }
+    return (
+      <FunctionContainer>
+        <div
+          role="presentation"
+          type="button"
+          onClick={editQuestion}
+          className="s-menu"
+        >
+          edit
+        </div>
+        <div
+          role="presentation"
+          type="button"
+          onClick={deleteQuestion}
+          className="s-menu"
+        >
+          delete
+        </div>
+      </FunctionContainer>
+    );
+  };
+
+  const getTime = res => {
+    const last = new Date(res);
+    const now = new Date();
+    let year = now.getFullYear() - last.getFullYear();
+    let month = now.getMonth() + 1 - (last.getMonth() + 1);
+    let day = now.getDate() - last.getDate();
+    if (day < 0) {
+      day += [1, 3, 5, 7, 8, 10, 12].includes(month)
+        ? 31
+        : month === 2
+        ? 28
+        : 30;
+      month -= 1;
+    }
+    if (month < 0) {
+      month += 12;
+      year -= 1;
+    }
+    return `${year === 0 ? '' : `${year} years`} ${
+      month === 0 ? '' : `${month} months`
+    } ${day === 0 ? 'today' : `${day} days`}`;
+  };
+
+  useEffect(() => {
+    if (update) {
+      getQuestion(detailId).then(res => {
+        const ask = getTime(res.createdAt);
+        const mod = getTime(res.lastModifiedDate);
+        setPostInfo({ ...postInfo, ask, mod });
+      });
+      getAnswer(detailId).then(res => setAnsIds(getAnsId(res)));
+      setUpdate(false);
+    }
+  }, [update]);
 
   return (
     <DetailContainer>
@@ -151,12 +340,12 @@ export default function Details() {
         <TitleWrapper className="s-page-title wrap">
           <Title className="s-page-title--text">
             <H1Container className="s-page-title--header">
-              Possible typo in openwebbeans.properties in openejb-core.jar?
+              {post && post.title}
             </H1Container>
             <p className="s-page-title--description">
-              <SubInfo>Asked today</SubInfo>
-              <SubInfo>Modified today</SubInfo>
-              <SubInfo>Viewed 6 times</SubInfo>
+              <SubInfo>Asked {postInfo.ask}</SubInfo>
+              <SubInfo>Modified {postInfo.mod}</SubInfo>
+              <SubInfo>Viewed {post && post.viewCount} times</SubInfo>
             </p>
           </Title>
           <ButtonWrapper>
@@ -176,98 +365,146 @@ export default function Details() {
               <TextWrapper>
                 <ArrowContainer>
                   <div
+                    role="presentation"
                     className="fc-black-200"
+                    onClick={() => countUpQ(detailId)}
                     dangerouslySetInnerHTML={{ __html: Icons.IconArrowUpLg }}
                   />
-                  <div>2</div>
+                  <div>{post ? post.likeCount : ''}</div>
                   <div
+                    role="presentation"
+                    onClick={() => countDownQ(detailId)}
                     className="fc-black-200"
                     dangerouslySetInnerHTML={{ __html: Icons.IconArrowDownLg }}
                   />
                 </ArrowContainer>
                 <TextAreaContainer>
                   <TextContainer className="s-textarea__m">
-                    With react-router I can use the Link element to create links
-                    which are natively handled by react router. I see internally
-                    it calls this.context.transitionTo(...). I want to do a
-                    navigation. Not from a link, but from a dropdown selection
-                    (as an example). How can I do this in code? What is
-                    this.context? I saw the Navigation mixin, but can I do this
-                    without mixins?
+                    {post ? (
+                      <div dangerouslySetInnerHTML={{ __html: post.body }} />
+                    ) : (
+                      <div />
+                    )}
                   </TextContainer>
                   <TagContainer>
                     <Tags className="d-flex g4">
-                      <div className="s-tag">jquery</div>
-                      <div className="s-tag">javascript</div>
-                      <div className="s-tag">android</div>
-                      <div className="s-tag is-selected">razor</div>
+                      {post ? (
+                        post.tags.map(el => {
+                          return (
+                            <div key={el} className="s-tag">
+                              {el}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div />
+                      )}
+                      {/* <div className="s-tag is-selected">razor</div> */}
                     </Tags>
                   </TagContainer>
+                  {post && callFunction()}
                 </TextAreaContainer>
               </TextWrapper>
               <NameSpace>
                 <div className="s-user-card s-user-card__highlighted">
-                  <time className="s-user-card--time">3 minutes ago</time>
+                  <time className="s-user-card--time">
+                    asked{' '}
+                    {post ? new Date(post.createdAt).toLocaleDateString() : ''}
+                  </time>
                   <div className="s-avatar s-avatar__32 s-user-card--avatar">
-                    <img className="s-avatar--image" alt="dk" src="…" />
+                    <img
+                      className="s-avatar--image"
+                      alt="profile"
+                      src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1"
+                    />
                   </div>
                   <div className="s-user-card--info">
-                    <span className="s-user-card--link">Paul Sight</span>
+                    <span className="s-user-card--link">
+                      {post && post.memberName}
+                    </span>
                   </div>
                 </div>
               </NameSpace>
             </ArticleWrapper>
+
             <AnswerContainer>
               <H2 className="answers-subheader d-flex ai-center mb8">
-                2 Answers
+                {post && post.answerCount} Answers
               </H2>
-              <ContentContainer>
-                <ArticleWrapper>
-                  <TextWrapper>
-                    <ArrowContainer>
-                      <div
-                        className="fc-black-200"
-                        dangerouslySetInnerHTML={{
-                          __html: Icons.IconArrowUpLg,
-                        }}
-                      />
-                      <div>1</div>
-                      <div
-                        className="fc-black-200"
-                        dangerouslySetInnerHTML={{
-                          __html: Icons.IconArrowDownLg,
-                        }}
-                      />
-                    </ArrowContainer>
-                    <TextAreaContainer>
-                      <TextContainer className="s-textarea__m">
-                        {`React Router is mostly a wrapper around the history library.
-              history handles interaction with the browser's window.history for
-              you with its browser and hash histories. It also provides a memory
-              history which is useful for environments that don't have a global
-              history. This is particularly useful in mobile app development
-              (react-native) and unit testing with Node.`}
-                      </TextContainer>
-                    </TextAreaContainer>
-                  </TextWrapper>
-                </ArticleWrapper>
-              </ContentContainer>
-              <NameSpace>
-                <div className="s-user-card">
-                  <time className="s-user-card--time">1 minutes ago</time>
-                  <div className="s-avatar s-avatar__32 s-user-card--avatar">
-                    <img className="s-avatar--image" alt="dk" src="…" />
-                  </div>
-                  <div className="s-user-card--info">
-                    <span className="s-user-card--link">Paul Sight</span>
-                  </div>
-                </div>
-              </NameSpace>
+              {answer ? (
+                answer.map((el, idx) => {
+                  return (
+                    <div key={el.answerId}>
+                      <ContentContainer>
+                        <ArticleWrapper>
+                          <TextWrapper>
+                            <ArrowContainer>
+                              <div
+                                role="presentation"
+                                onClick={() => countUpA(ansIds[idx])}
+                                className="fc-black-200"
+                                dangerouslySetInnerHTML={{
+                                  __html: Icons.IconArrowUpLg,
+                                }}
+                              />
+                              <div>{el.likeCount}</div>
+                              <div
+                                role="presentation"
+                                onClick={() => countDownA(ansIds[idx])}
+                                className="fc-black-200"
+                                dangerouslySetInnerHTML={{
+                                  __html: Icons.IconArrowDownLg,
+                                }}
+                              />
+                            </ArrowContainer>
+                            <TextAreaContainer>
+                              <TextContainer className="s-textarea__m">
+                                <div
+                                  dangerouslySetInnerHTML={{
+                                    __html: el.answerBody,
+                                  }}
+                                />
+                              </TextContainer>
+                            </TextAreaContainer>
+                          </TextWrapper>
+                        </ArticleWrapper>
+                      </ContentContainer>
+                      <NameSpace>
+                        <div className="s-user-card">
+                          <time className="s-user-card--time">
+                            answered{' '}
+                            {new Date(el.createdAt).toLocaleDateString()}
+                          </time>
+                          <div className="s-avatar s-avatar__32 s-user-card--avatar">
+                            <img
+                              className="s-avatar--image"
+                              alt="profile"
+                              src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1"
+                            />
+                          </div>
+                          <div className="s-user-card--info">
+                            <span className="s-user-card--link">
+                              {el.memberName}
+                            </span>
+                          </div>
+                        </div>
+                      </NameSpace>
+                    </div>
+                  );
+                })
+              ) : (
+                <div />
+              )}
             </AnswerContainer>
             <H2 className="space">Your Answer</H2>
-            <TextEditor />
+            <TextEditor setValue={setValue} setSendAnswer={setSendAnswer} />
             <ButtonWrapper className="clear-both d-flex gsx gs4">
-              <Button className="s-btn s-btn__primary" type="button">
+              <Button
+                className="s-btn s-btn__primary"
+                disabled={!sendAnswer}
+                type="button"
+                onClick={postAnswer}
+              >
                 Post Your Answer
               </Button>
             </ButtonWrapper>
