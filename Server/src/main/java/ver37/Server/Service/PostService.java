@@ -32,13 +32,18 @@ public class PostService {
     }
 
     public Post patchPost(Post post) {
+        Post verifyPost = findPostOwner(post);
+
+        verifyPost.changeSubject(post.getTitle(), post.getPostBody(), post.getTags());
+        return verifyPost;
+    }
+
+    private Post findPostOwner(Post post) {
         Post verifyPost = findVerifyPost(post.getPostId());
         Member memberByRequest = getMemberByAccess();
         if (!verifyPost.getMember().equals(memberByRequest)) {
             throw new CustomException(ExceptionCode.INVALID_AUTH_TOKEN);
         }
-
-        verifyPost.changeSubject(post.getTitle(), post.getPostBody(), post.getTags());
         return verifyPost;
     }
 
@@ -98,8 +103,8 @@ public class PostService {
         return verifyPost;
     }
 
-    public void deletePost(Long postId) {
-        Post verifyPost = findVerifyPost(postId);
-        postRepository.deleteById(verifyPost.getPostId());
+    public void deletePost(Long postId, String token) {
+        Post post = findPostOwner(findVerifyPost(postId));
+        postRepository.deleteById(post.getPostId());
     }
 }
