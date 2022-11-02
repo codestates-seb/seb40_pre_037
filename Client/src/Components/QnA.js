@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import * as Icons from '@stackoverflow/stacks-icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import jwt from 'jwt-decode';
 
 import AsideRight from './AsideRight';
 import TextEditor from './TextEditor';
@@ -140,12 +141,23 @@ const MarginWrapper = styled.div`
   margin-top: -75px;
 `;
 
+const FunctionContainer = styled.div`
+  color: gray;
+  display: flex;
+  flex-direction: row;
+  & div {
+    margin-right: 10px;
+  }
+`;
+
 export default function Details() {
   const navigate = useNavigate();
   const [post, setPost] = useState();
   const [answer, setAnswer] = useState();
   const [postInfo, setPostInfo] = useState({});
-  const [update, setUpdate] = useState(false);
+  const [update, setUpdate] = useState(true);
+  const [value, setValue] = useState('');
+  const [sendAnswer, setSendAnswer] = useState(false);
   const token = localStorage.getItem('login-token');
   const urlParams = new URL(window.location.href).searchParams;
   const detailId = urlParams.get('postId');
@@ -197,6 +209,7 @@ export default function Details() {
     });
     setUpdate(true);
   };
+
   const countDownQ = id => {
     const header = {
       headers: { authorization: token },
@@ -216,6 +229,7 @@ export default function Details() {
     });
     setUpdate(true);
   };
+
   const countDownA = id => {
     const header = {
       headers: { authorization: token },
@@ -226,12 +240,65 @@ export default function Details() {
     setUpdate(true);
   };
 
+  const postAnswer = () => {
+    const header = {
+      headers: { authorization: token },
+    };
+    if (sendAnswer) {
+      axios
+        .post(`/answers`, { postId: +detailId, answerBody: value }, header)
+        .catch(error => {
+          console.log(error);
+        });
+      setUpdate(true);
+    }
+  };
+
+  const deleteQuestion = () => {
+    const header = {
+      headers: { authorization: token },
+    };
+    axios.delete(`/여기 url 자리에요`, header).catch(e => console.log(e));
+    setUpdate(true);
+  };
+
+  const editQuestion = () => {
+    navigate(`/write/?postId=${detailId}`);
+  };
+
+  const callFunction = () => {
+    const decode = jwt(token.split(' ')[1]);
+    if (decode.nickname !== post.memberName) {
+      return '';
+    }
+    return (
+      <FunctionContainer>
+        <div
+          role="presentation"
+          type="button"
+          onClick={editQuestion}
+          className="s-menu"
+        >
+          edit
+        </div>
+        <div
+          role="presentation"
+          type="button"
+          onClick={deleteQuestion}
+          className="s-menu"
+        >
+          delete
+        </div>
+      </FunctionContainer>
+    );
+  };
+
   useEffect(() => {
     if (update) {
       getQuestion(detailId).then(res => {
         const last = new Date(res.createdAt);
         const now = new Date();
-        const year = now.getFullYear() - last.getFullYear();
+        let year = now.getFullYear() - last.getFullYear();
         let month = now.getMonth() + 1 - (last.getMonth() + 1);
         let day = now.getDate() - last.getDate();
         if (day < 0) {
@@ -242,13 +309,16 @@ export default function Details() {
             : 30;
           month -= 1;
         }
+        if (month < 0) {
+          month += 12;
+          year -= 1;
+        }
         const ask = `${year === 0 ? '' : `${year} years`} ${
           month === 0 ? '' : `${month} months`
         } ${day === 0 ? 'today' : `${day} days`}`;
         setPostInfo({ ...postInfo, ask, mod: 0 });
       });
       getAnswer(detailId);
-
       setUpdate(false);
     }
   }, [update]);
@@ -259,12 +329,12 @@ export default function Details() {
         <TitleWrapper className="s-page-title wrap">
           <Title className="s-page-title--text">
             <H1Container className="s-page-title--header">
-              {post ? post.title : ''}
+              {post && post.title}
             </H1Container>
             <p className="s-page-title--description">
               <SubInfo>Asked {postInfo.ask}</SubInfo>
               <SubInfo>Modified {postInfo.mod}</SubInfo>
-              <SubInfo>Viewed {post ? post.viewCount : '0'} times</SubInfo>
+              <SubInfo>Viewed {post && post.viewCount} times</SubInfo>
             </p>
           </Title>
           <ButtonWrapper>
@@ -321,6 +391,7 @@ export default function Details() {
                       {/* <div className="s-tag is-selected">razor</div> */}
                     </Tags>
                   </TagContainer>
+                  {post && callFunction()}
                 </TextAreaContainer>
               </TextWrapper>
               <NameSpace>
@@ -330,11 +401,15 @@ export default function Details() {
                     {post ? new Date(post.createdAt).toLocaleDateString() : ''}
                   </time>
                   <div className="s-avatar s-avatar__32 s-user-card--avatar">
-                    <img className="s-avatar--image" alt="dk" src="…" />
+                    <img
+                      className="s-avatar--image"
+                      alt="profile"
+                      src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1"
+                    />
                   </div>
                   <div className="s-user-card--info">
                     <span className="s-user-card--link">
-                      {post ? post.memberName : ''}
+                      {post && post.memberName}
                     </span>
                   </div>
                 </div>
@@ -343,7 +418,7 @@ export default function Details() {
 
             <AnswerContainer>
               <H2 className="answers-subheader d-flex ai-center mb8">
-                {post ? post.answerCount : 0} Answers
+                {post && post.answerCount} Answers
               </H2>
               {answer ? (
                 answer.map(el => {
@@ -373,7 +448,11 @@ export default function Details() {
                             </ArrowContainer>
                             <TextAreaContainer>
                               <TextContainer className="s-textarea__m">
-                                {el.answerBody}
+                                <div
+                                  dangerouslySetInnerHTML={{
+                                    __html: el.answerBody,
+                                  }}
+                                />
                               </TextContainer>
                             </TextAreaContainer>
                           </TextWrapper>
@@ -386,7 +465,11 @@ export default function Details() {
                             {new Date(el.createdAt).toLocaleDateString()}
                           </time>
                           <div className="s-avatar s-avatar__32 s-user-card--avatar">
-                            <img className="s-avatar--image" alt="dk" src="…" />
+                            <img
+                              className="s-avatar--image"
+                              alt="profile"
+                              src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1"
+                            />
                           </div>
                           <div className="s-user-card--info">
                             <span className="s-user-card--link">
@@ -403,9 +486,14 @@ export default function Details() {
               )}
             </AnswerContainer>
             <H2 className="space">Your Answer</H2>
-            <TextEditor />
+            <TextEditor setValue={setValue} setSendAnswer={setSendAnswer} />
             <ButtonWrapper className="clear-both d-flex gsx gs4">
-              <Button className="s-btn s-btn__primary" type="button">
+              <Button
+                className="s-btn s-btn__primary"
+                disabled={!sendAnswer}
+                type="button"
+                onClick={postAnswer}
+              >
                 Post Your Answer
               </Button>
             </ButtonWrapper>
