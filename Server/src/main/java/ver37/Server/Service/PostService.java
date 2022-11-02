@@ -103,7 +103,7 @@ public class PostService {
         return verifyPost;
     }
 
-    public void deletePost(Long postId, String token) {
+    public void deletePost(Long postId) {
         Post post = findPostOwner(findVerifyPost(postId));
         postRepository.deleteById(post.getPostId());
     }
