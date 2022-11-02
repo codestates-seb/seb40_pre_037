@@ -158,6 +158,7 @@ export default function Details() {
   const [update, setUpdate] = useState(true);
   const [value, setValue] = useState('');
   const [sendAnswer, setSendAnswer] = useState(false);
+  const [ansIds, setAnsIds] = useState();
   const token = localStorage.getItem('login-token');
   const urlParams = new URL(window.location.href).searchParams;
   const detailId = urlParams.get('postId');
@@ -198,6 +199,11 @@ export default function Details() {
       .catch(error => {
         console.log(error);
       });
+  };
+
+  const getAnsId = res => {
+    const ids = res.map(el => el.answerId);
+    return ids;
   };
 
   const countUpQ = id => {
@@ -318,7 +324,7 @@ export default function Details() {
         } ${day === 0 ? 'today' : `${day} days`}`;
         setPostInfo({ ...postInfo, ask, mod: 0 });
       });
-      getAnswer(detailId);
+      getAnswer(detailId).then(res => setAnsIds(getAnsId(res)));
       setUpdate(false);
     }
   }, [update]);
@@ -421,7 +427,7 @@ export default function Details() {
                 {post && post.answerCount} Answers
               </H2>
               {answer ? (
-                answer.map(el => {
+                answer.map((el, idx) => {
                   return (
                     <div key={el.answerId}>
                       <ContentContainer>
@@ -430,7 +436,7 @@ export default function Details() {
                             <ArrowContainer>
                               <div
                                 role="presentation"
-                                onClick={() => countUpA(el.answerId)}
+                                onClick={() => countUpA(ansIds[idx])}
                                 className="fc-black-200"
                                 dangerouslySetInnerHTML={{
                                   __html: Icons.IconArrowUpLg,
@@ -439,7 +445,7 @@ export default function Details() {
                               <div>{el.likeCount}</div>
                               <div
                                 role="presentation"
-                                onClick={() => countDownA(el.answerId)}
+                                onClick={() => countDownA(ansIds[idx])}
                                 className="fc-black-200"
                                 dangerouslySetInnerHTML={{
                                   __html: Icons.IconArrowDownLg,
