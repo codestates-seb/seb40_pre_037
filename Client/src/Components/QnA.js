@@ -299,30 +299,35 @@ export default function Details() {
     );
   };
 
+  const getTime = res => {
+    const last = new Date(res);
+    const now = new Date();
+    let year = now.getFullYear() - last.getFullYear();
+    let month = now.getMonth() + 1 - (last.getMonth() + 1);
+    let day = now.getDate() - last.getDate();
+    if (day < 0) {
+      day += [1, 3, 5, 7, 8, 10, 12].includes(month)
+        ? 31
+        : month === 2
+        ? 28
+        : 30;
+      month -= 1;
+    }
+    if (month < 0) {
+      month += 12;
+      year -= 1;
+    }
+    return `${year === 0 ? '' : `${year} years`} ${
+      month === 0 ? '' : `${month} months`
+    } ${day === 0 ? 'today' : `${day} days`}`;
+  };
+
   useEffect(() => {
     if (update) {
       getQuestion(detailId).then(res => {
-        const last = new Date(res.createdAt);
-        const now = new Date();
-        let year = now.getFullYear() - last.getFullYear();
-        let month = now.getMonth() + 1 - (last.getMonth() + 1);
-        let day = now.getDate() - last.getDate();
-        if (day < 0) {
-          day += [1, 3, 5, 7, 8, 10, 12].includes(month)
-            ? 31
-            : month === 2
-            ? 28
-            : 30;
-          month -= 1;
-        }
-        if (month < 0) {
-          month += 12;
-          year -= 1;
-        }
-        const ask = `${year === 0 ? '' : `${year} years`} ${
-          month === 0 ? '' : `${month} months`
-        } ${day === 0 ? 'today' : `${day} days`}`;
-        setPostInfo({ ...postInfo, ask, mod: 0 });
+        const ask = getTime(res.createdAt);
+        const mod = getTime(res.lastModifiedDate);
+        setPostInfo({ ...postInfo, ask, mod });
       });
       getAnswer(detailId).then(res => setAnsIds(getAnsId(res)));
       setUpdate(false);
