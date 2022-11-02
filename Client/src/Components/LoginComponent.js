@@ -58,7 +58,7 @@ const Errormsg = styled.p`
   font-size: 12px;
 `;
 
-function LoginComponent() {
+function LoginComponent({setLogin}) {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState(false);
 
@@ -81,6 +81,9 @@ function LoginComponent() {
           localStorage.setItem('login-refresh', res.headers.refresh);
         }
         setLoginError(false);
+      })
+      .then(()=>{
+        setLogin(true)
         navigate('/');
       })
       .catch(err => {

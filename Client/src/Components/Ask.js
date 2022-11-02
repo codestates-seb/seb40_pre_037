@@ -1,9 +1,22 @@
+/*
+책임개발자 : 최유정
+최초생성일 : 2022.10.26
+최근수정일 : 2022.11.2
+개요 :
+글작성 유효성 검사(유효하면 바로 작동이 될 수 있게 진행해보는중)
+현재상황 : 버튼을 누르면 유효성 검사 -> 유효성 검사를 통과 했을 때 타이틀은 바로 반응 (수정 필요)
+        바디, 태그는 바로 반응은 없으나 유효성 검사 통과 시 post 요청을 할 수 있음
+        타이틀(5자 이상, 필수)
+        바디(15자 이상 앞뒤 공백 제외)
+        태그(1개 이상) -> 태그 작성 시의 태그 중복은 입력을 못하게 막아둠 
+*/
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { Editor } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/i18n/ko-kr';
+import { useNavigate } from 'react-router-dom';
 
 const AskContainer = styled.div`
   margin-top: 60px;
@@ -15,15 +28,12 @@ const BackgroundImgDiv = styled.div`
   width: 100%;
   height: 120px;
   width: 90vw;
-  /* padding-right: 300px; */
 `;
 
 const Structure = styled.div`
   width: 800px;
 `;
 const AskTitle = styled.h1`
-  /* margin-left: 10px;
-  margin-bottom: 20px; */
   font-size: 1.6rem;
   font-weight: 800;
 `;
@@ -104,7 +114,24 @@ const InputTag = styled.input`
     outline: none;
   }
 `;
-
+const NotValidInputDiv = styled.div`
+  height: 37px;
+  width: 732px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #e87d81;
+  border-radius: 5px;
+  color: black;
+  font-size: 14px;
+  margin: 0px;
+  padding: 0.3em 0.7em;
+  overflow: scroll;
+  &:focus {
+    border: 1px solid red;
+  }
+`;
 const TagLi = styled.li`
   display: flex;
   flex-direction: row;
@@ -147,60 +174,61 @@ const TagButton = styled.button`
   }
 `;
 
+const ValidText = styled.div`
+  font-size: 0.8rem;
+  color: #e87d81;
+  padding-top: 5px;
+  padding-left: 1px;
+`;
+
+const EditorWrapDiv = styled.div`
+  border: 1px solid #e87d81;
+  border-radius: 4px;
+`;
+
 function Ask() {
   const editorRef = useRef();
-  const [value, setValue] = useState('');
   const [titleValue, setTitleValue] = useState('');
+  const [value, setValue] = useState('');
   const [tagItem, setTagItem] = useState([]);
   const [tagValue, setTagValue] = useState('');
+  const [validValue, setValidValue] = useState('');
+  const [validTitleTest, setValidTitleTest] = useState(true);
+  const [validBodyTest, setValidBodyTest] = useState(true);
+  const [validTagTest, setValidTagTest] = useState(true);
+  const navigate = useNavigate();
 
   const onChange = () => {
-    // console.log(e);
     const data = editorRef.current.getInstance().getHTML();
+    const datas = editorRef.current
+      .getInstance()
+      .getHTML()
+      .replace(/<[^>]*>?/g, ''); // html태그 제거 정규식 대박...
+    console.log(data);
+    setValidValue(datas);
     setValue(data);
-    // console.log(typeof data);
+    // if (datas.trim().length >= 15) {
+    //   setValidBodyTest(true);
+    // } else {
+    //   setValidBodyTest(false);
+    // }
   };
 
   const onChangeTitle = e => {
     setTitleValue(e.target.value);
-    // console.log(titleValue);
+    if (titleValue.trim().length >= 5) {
+      setValidTitleTest(true);
+    } else {
+      setValidTitleTest(false);
+    }
   };
 
   const onChangeTag = e => {
     setTagValue(e.target.value);
-    // console.log(tagValue);
   };
 
-  // const defaultValue = () => {
-  //   // editorRef.current.setInstance().setMarkdown('hello react editor world!');
-  //   // setValue('');
-  //   // setTagValue('');
-  //   // setTitleValue('');
-  //   window.location.replace('/detail');
-  // };
-
-  const onClickQuestionButton = () => {
-    axios
-      .post(
-        '/post',
-        {
-          title: titleValue,
-          body: value,
-          tags: tagItem,
-        },
-        {
-          headers: {
-            // 'Content-Type': 'application/json',
-            Authorization: `${localStorage.getItem('login-token')}`,
-          },
-        },
-      )
-      .then(res => {
-        console.log(res);
-      })
-      .then(res => console.log(res))
-      // .then(defaultValue())
-      .catch(err => console.log(err));
+  const defaultValue = () => {
+    navigate('/detail');
   };
 
   const TagEnter = e => {
@@ -209,11 +237,11 @@ function Ask() {
       !tagItem.includes(e.target.value) &&
       e.target.value.length !== 0
     ) {
+      // console.log(e.target.value);
       const updateTagList = [...tagItem];
       updateTagList.push(tagValue);
       setTagItem(updateTagList);
       setTagValue('');
-      // console.log(tagItem);
     }
   };
 
@@ -221,6 +249,62 @@ function Ask() {
     const deleteTag = tagItem.filter((el, idx) => idx !== index);
     setTagItem(deleteTag);
   };
+
+  const onClickQuestionButton = () => {
+    if (
+      titleValue.length >= 5 &&
+      validValue.length >= 15 &&
+      tagItem.length !== 0
+    ) {
+      axios
+        .post(
+          '/post',
+          {
+            title: titleValue,
+            body: value,
+            tags: tagItem,
+          },
+          {
+            headers: {
+              Authorization: `${localStorage.getItem('login-token')}`,
+            },
+          },
+        )
+        .then(res => {
+          console.log(res);
+        })
+        .then(res => console.log(res))
+        .then(defaultValue())
+        .catch(err => console.log(err));
+    } else {
+      console.log('유효성');
+      console.log(titleValue, value, tagItem);
+      setValidTitleTest(false);
+      setValidBodyTest(false);
+      setValidTagTest(false);
+    }
+  };
+  //   axios
+  //     .post(
+  //       '/post',
+  //       {
+  //         title: titleValue,
+  //         body: value,
+  //         tags: tagItem,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `${localStorage.getItem('login-token')}`,
+  //         },
+  //       },
+  //     )
+  //     .then(res => {
+  //       console.log(res);
+  //     })
+  //     .then(res => console.log(res))
+  //     .then(defaultValue())
+  //     .catch(err => console.log(err));
+  // };
 
   return (
     <AskContainer>
@@ -264,18 +348,34 @@ function Ask() {
               Be specific and imagine you’re asking a question to another
               person.
             </div>
-            <div className="d-flex gs4 gsy fd-column">
-              <div className="d-flex ps-relative">
-                <input
-                  value={titleValue}
-                  onChange={onChangeTitle}
-                  className="s-input"
-                  id="example-item1"
-                  type="text"
-                  placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
-                />
+            {validTitleTest ? (
+              <div className="d-flex gs4 gsy fd-column">
+                <div className="d-flex ps-relative">
+                  <input
+                    value={titleValue}
+                    onChange={onChangeTitle}
+                    className="s-input"
+                    id="example-item1"
+                    type="text"
+                    placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="d-flex gs4 gsy fd-column">
+                <div className="d-flex ps-relative">
+                  <input
+                    value={titleValue}
+                    onChange={onChangeTitle}
+                    className="s-input bc-red-300"
+                    id="example-item1"
+                    type="text"
+                    placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
+                  />
+                </div>
+                <ValidText>Minimum 5 characters</ValidText>
+              </div>
+            )}
           </div>
           <div className="ba bc-black-100 p24 mr8 ml8 mb12 mt24 bar-sm">
             <h3 className="mb2 fw-bold">body</h3>
@@ -283,19 +383,34 @@ function Ask() {
               Introduce the problem and expand on what you put in the title.
               Minimum 15 characters.
             </div>
-            <div className="edit_wrap">
-              <Editor
-                // initialValue="write here"
-                // previewStyle="vertical"
-                height="300px"
-                initialEditType="markdown"
-                useCommandShortcut={false}
-                // language="ko-KR"
-                hideModeSwitch
-                ref={editorRef}
-                onChange={onChange}
-              />
-            </div>
+            {validBodyTest ? (
+              <div className="edit_wrap">
+                <Editor
+                  initialValue="write here"
+                  height="300px"
+                  initialEditType="markdown"
+                  useCommandShortcut={false}
+                  hideModeSwitch
+                  ref={editorRef}
+                  onChange={onChange}
+                />
+              </div>
+            ) : (
+              <>
+                <EditorWrapDiv className="edit_wrap">
+                  <Editor
+                    initialValue="write here"
+                    height="300px"
+                    initialEditType="markdown"
+                    useCommandShortcut={false}
+                    hideModeSwitch
+                    ref={editorRef}
+                    onChange={onChange}
+                  />
+                </EditorWrapDiv>
+                <ValidText>Minimum 15 characters</ValidText>
+              </>
+            )}
           </div>
           <div className="ba bc-black-100 p24 mr8 ml8 mb12 mt24 bar-sm">
             <h3 className="mb2 fw-bold">Tags</h3>
@@ -303,30 +418,60 @@ function Ask() {
               Add up to 5 tags to describe what your question is about. Start
               typing to see suggestions.
             </div>
-            <InputTagDiv>
-              <ul className="d-flex ps-relative">
-                {tagItem.map((el, idx) => {
-                  return (
-                    <TagLi key={el}>
-                      <TagSpan>{el}</TagSpan>
-                      <TagButton
-                        type="button"
-                        onClick={() => deleteTagItem(idx)}
-                      >
-                        ⅹ
-                      </TagButton>
-                    </TagLi>
-                  );
-                })}
-              </ul>
-              <InputTag
-                value={tagValue}
-                onChange={onChangeTag}
-                onKeyPress={TagEnter}
-                type="text"
-                placeholder="press enter"
-              />
-            </InputTagDiv>
+            {validTagTest ? (
+              <InputTagDiv>
+                <ul className="d-flex ps-relative">
+                  {tagItem.map((el, idx) => {
+                    return (
+                      <TagLi key={el}>
+                        <TagSpan>{el}</TagSpan>
+                        <TagButton
+                          type="button"
+                          onClick={() => deleteTagItem(idx)}
+                        >
+                          ⅹ
+                        </TagButton>
+                      </TagLi>
+                    );
+                  })}
+                </ul>
+                <InputTag
+                  value={tagValue}
+                  onChange={onChangeTag}
+                  onKeyPress={TagEnter}
+                  type="text"
+                  placeholder="press enter"
+                />
+              </InputTagDiv>
+            ) : (
+              <>
+                <NotValidInputDiv>
+                  <ul className="d-flex ps-relative">
+                    {tagItem.map((el, idx) => {
+                      return (
+                        <TagLi key={el}>
+                          <TagSpan>{el}</TagSpan>
+                          <TagButton
+                            type="button"
+                            onClick={() => deleteTagItem(idx)}
+                          >
+                            ⅹ
+                          </TagButton>
+                        </TagLi>
+                      );
+                    })}
+                  </ul>
+                  <InputTag
+                    value={tagValue}
+                    onChange={onChangeTag}
+                    onKeyPress={TagEnter}
+                    type="text"
+                    placeholder="press enter"
+                  />
+                </NotValidInputDiv>
+                <ValidText>Minimum 1 tag</ValidText>
+              </>
+            )}
           </div>
           <button
             onClick={onClickQuestionButton}
