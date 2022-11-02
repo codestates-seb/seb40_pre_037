@@ -32,7 +32,6 @@ public class PostController {
     private final PostMapper postMapper;
 
 
-
     @PostMapping
     public ResponseEntity postPost(@Valid @RequestBody PostDto.Post post) {
         Post postAble =
@@ -66,6 +65,7 @@ public class PostController {
         List<Post> content = presentPost.getContent();
         return new ResponseEntity(new MultiResponseDto<>(postMapper.postsToPostResponses(content), presentPost), HttpStatus.OK);
     }
+
     @GetMapping("/like")
     public ResponseEntity getLIkePost(@RequestParam("page") @Positive int page,
                                       @RequestParam("size") @Positive int size) {
@@ -74,6 +74,7 @@ public class PostController {
         List<Post> content = presentPost.getContent();
         return new ResponseEntity(new MultiResponseDto<>(postMapper.postsToPostResponses(content), presentPost), HttpStatus.OK);
     }
+
     @GetMapping("/view")
     public ResponseEntity getViewPost(@RequestParam("page") @Positive int page,
                                       @RequestParam("size") @Positive int size) {
@@ -86,13 +87,19 @@ public class PostController {
 
     @PostMapping("/like/up/{post-id}")
     public ResponseEntity likeUp(@PathVariable("post-id") Long postId) {
-        Post post = postService.likeChange(postId,1);
-        return new ResponseEntity(postMapper.postToPostResponse(post),HttpStatus.ACCEPTED);
+        Post post = postService.likeChange(postId, 1);
+        return new ResponseEntity(postMapper.postToPostResponse(post), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/like/down/{post-id}")
     public ResponseEntity likeDown(@PathVariable("post-id") Long postId) {
-        Post post = postService.likeChange(postId,-1);
+        Post post = postService.likeChange(postId, -1);
         return new ResponseEntity(postMapper.postToPostResponse(post), HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/{post-id}")
+    public ResponseEntity deletePost(@PathVariable("post-id") Long postId) {
+        postService.deletePost(postId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -97,4 +97,9 @@ public class PostService {
         }
         return verifyPost;
     }
+
+    public void deletePost(Long postId) {
+        Post verifyPost = findVerifyPost(postId);
+        postRepository.deleteById(verifyPost.getPostId());
+    }
 }

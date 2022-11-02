@@ -69,7 +69,7 @@ public class Post extends Auditing {
         }
     }
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE)
     private List<Answer> answers = new ArrayList<>();
 
 
