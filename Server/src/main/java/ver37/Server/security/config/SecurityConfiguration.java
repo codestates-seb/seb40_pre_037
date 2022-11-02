@@ -19,6 +19,8 @@ import ver37.Server.repository.MemberRepository;
 import ver37.Server.security.jwt.JwtAuthenticationFilter;
 import ver37.Server.security.jwt.JwtAuthorizationFilter;
 
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -43,9 +45,6 @@ public class SecurityConfiguration {
                 .apply(new CustomFilterConfigurer())
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers(HttpMethod.POST, "*/member/refresh").permitAll()
-                .antMatchers(HttpMethod.GET, "/*/members/").hasAnyRole("USER", "ADMIN")
-                .antMatchers(HttpMethod.GET, "/*/members/").hasRole("ADMIN")
                 .anyRequest().permitAll();
 
         return http.build();
