@@ -1,18 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 import { Editor } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/i18n/ko-kr';
 
-export default function TextEditor() {
+export default function TextEditor({ setValue, setSendAnswer }) {
   const editorRef = useRef();
-  const [value, setValue] = useState('');
 
   const onChange = () => {
     const data = editorRef.current.getInstance().getHTML();
     setValue(data);
-    console.log(typeof data);
-    console.log(value);
+    if (data.length < 16) {
+      // 유효성 검사
+      setSendAnswer(false);
+    } else {
+      setSendAnswer(true);
+    }
   };
 
   return (
