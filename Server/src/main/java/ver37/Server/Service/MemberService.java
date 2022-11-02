@@ -14,6 +14,7 @@ import ver37.Server.exception.ExceptionCode;
 import ver37.Server.repository.JwtRepository;
 import ver37.Server.repository.MemberRepository;
 import ver37.Server.security.auth.utils.CustomAuthorityUtils;
+import ver37.Server.security.jwt.TokenConfig;
 
 import javax.persistence.EntityManager;
 import java.util.Date;
@@ -23,7 +24,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class MemberService {
+public class MemberService implements TokenConfig {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -65,11 +66,11 @@ public class MemberService {
         Jwt token = jwtRepository.findRefreshToken(refreshToken).orElseThrow(() -> new CustomException(ExceptionCode.REFRESH_TOKEN_NOT_FOUND));
 
         String accessToken = JWT.create()
-                .withExpiresAt(new Date(System.currentTimeMillis() + (60000)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + (ACCESS_TOKEN_TIME)))
                 .withClaim("id", token.getMember().getMemberId())
                 .withClaim("username", token.getMember().getEmail())
                 .withClaim("nickname", token.getMember().getName())
-                .sign(Algorithm.HMAC256("zion"));
+                .sign(Algorithm.HMAC256(SECRET_KEY));
 
         token.changeAccessToken(accessToken);
 //        em.flush();

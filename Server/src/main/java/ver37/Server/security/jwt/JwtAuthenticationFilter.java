@@ -29,7 +29,7 @@ import java.util.Date;
 
 
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter implements TokenConfig{
     private final AuthenticationManager authenticationManager;
 
     private final JwtRepository jwtRepository;
@@ -74,22 +74,22 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         //jwt 토큰 만드는 라이브러리
         String accessToken = JWT.create()
                 .withSubject("JWT")
-                .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 100)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + (ACCESS_TOKEN_TIME)))
                 .withClaim("id", principal.getMember().getMemberId())
                 .withClaim("username", principal.getUsername())
                 .withClaim("nickname", principal.getMember().getName())
-                .sign(Algorithm.HMAC256("zion"));
+                .sign(Algorithm.HMAC256(SECRET_KEY));
 
 //        System.out.println(jwtToken+"전송완료");
 
         jwtRepository.findMemberId(principal.getMember().getMemberId()).ifPresent(jwtRepository::delete);
 
         String refreshToken = JWT.create()
-                .withExpiresAt(new Date(System.currentTimeMillis() + (600000) * 4))
+                .withExpiresAt(new Date(System.currentTimeMillis() + (REFRESH_TOKEN_TIME)))
                 .withClaim("id", principal.getMember().getMemberId())
                 .withClaim("username", principal.getUsername())
                 .withClaim("nickname", principal.getMember().getName())
-                .sign(Algorithm.HMAC256("zion"));
+                .sign(Algorithm.HMAC256(SECRET_KEY));
 
 
         Jwt jwt = new Jwt(accessToken,refreshToken, principal.getMember());
