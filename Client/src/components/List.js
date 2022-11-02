@@ -63,16 +63,12 @@ const BtnWrite = styled.button`
 const BtnSort = styled.button`
   font-size: 12px;
   padding: 10px;
-  color: #6a737c;
-  background-color: white;
   border: 1px solid rgb(140, 148, 156);
+  color: ${props => (props.sortBy ? '#3b4045' : '#61737c')};
+  background-color: ${props => (props.sortBy ? '#e3e6e8' : 'white')};
   &:hover {
     background-color: #f8f9f9;
     cursor: pointer;
-  }
-  &:first-child {
-    color: #3b4045;
-    background-color: #e3e6e8;
   }
 `;
 
@@ -197,14 +193,22 @@ const BtnPage = styled.button`
   font-size: 12px;
   height: 30px;
   min-width: 30px;
-  color: #3b3035;
-  background-color: white;
   border: 1px solid rgb(226, 228, 230);
+  color: ${props => (props.curPage ? '#fef5ef' : '#3b3035')};
+  background-color: ${props => (props.curPage ? '#f48224' : 'white')};
 
   &:hover {
-    color: #0c0d0e;
-    background-color: #d9d6dc;
+    color: ${props => (props.curPage ? '#fef5ef' : '#0c0d0e')};
+    background-color: ${props => (props.curPage ? '#f48224' : '#d9d6dc')};
     cursor: pointer;
+  }
+
+  &:first-child {
+    margin-right: 20px;
+  }
+
+  &:last-child {
+    margin-left: 20px;
   }
 `;
 
@@ -215,8 +219,61 @@ function List() {
   const [sortBy, setSortBy] = useState('present');
   const [totalPages, setTotalPages] = useState(1);
   const [totalQuestions, setTotalQuestions] = useState(0);
+  const [timeNow, setTimeNow] = useState(0);
 
   const navigate = useNavigate();
+
+  const howManyTimesAgo = createdAtUTC => {
+    const createdAt = Date.parse(createdAtUTC);
+    const diffSeconds = Math.round((timeNow - createdAt) / 1000);
+
+    if (diffSeconds < 60) {
+      if (diffSeconds === 1) return '1 sec ago';
+      return `${diffSeconds} secs ago`;
+    }
+
+    const diffMinutes = Math.round(diffSeconds / 60);
+
+    if (diffMinutes < 60) {
+      if (diffMinutes === 1) return '1 sec ago';
+      return `${diffMinutes} mins ago`;
+    }
+
+    const diffHours = Math.round(diffMinutes / 60);
+
+    if (diffHours < 24) {
+      if (diffHours === 1) return '1 hour ago';
+      return `${diffHours} hours ago`;
+    }
+
+    const diffDays = Math.round(diffHours / 24);
+
+    if (diffDays < 3) {
+      if (diffDays === 1) return 'yesterday';
+      return '2 days ago';
+    }
+
+    const dateCreatedAt = new Date(createdAt);
+
+    const month = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return `${
+      month[dateCreatedAt.getMonth()]
+    } ${dateCreatedAt.getDate()}, ${dateCreatedAt.getFullYear()} at ${dateCreatedAt.getHours()}:${dateCreatedAt.getMinutes()}`;
+  };
 
   const fetchPosts = async () => {
     const response = await axios.get(
@@ -231,10 +288,11 @@ function List() {
     setePosts(response.data.data);
     setTotalPages(response.data.pageInfo.totalPages);
     setTotalQuestions(response.data.pageInfo.totalElements);
+    setTimeNow(Date.now());
   };
 
   const getPages = () => {
-    const arr = Array.from({ length: totalPages + 1 }, (_, i) => i);
+    const arr = Array.from({ length: totalPages }, (_, i) => i + 1);
     setPages(arr);
   };
 
@@ -283,6 +341,8 @@ function List() {
   useEffect(() => {
     navigator();
   }, [sortBy, curPage]);
+
+  console.log(timeNow);
   return (
     <Container>
       <Section>
@@ -295,9 +355,15 @@ function List() {
         <Wrapper>
           <NumOfArticle>{`${totalQuestions} questions`}</NumOfArticle>
           <div>
-            <BtnSort onClick={onClickNewest}>Newest</BtnSort>
-            <BtnSort onClick={onClickViews}>Views</BtnSort>
-            <BtnSort onClick={onClickVotes}>Votes</BtnSort>
+            <BtnSort sortBy={sortBy === 'present'} onClick={onClickNewest}>
+              Newest
+            </BtnSort>
+            <BtnSort sortBy={sortBy === 'view'} onClick={onClickViews}>
+              Views
+            </BtnSort>
+            <BtnSort sortBy={sortBy === 'like'} onClick={onClickVotes}>
+              Votes
+            </BtnSort>
           </div>
         </Wrapper>
       </Section>
@@ -329,7 +395,9 @@ function List() {
                   <WrapperMeta>
                     <Img src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1" />
                     <Author>{post.memberName}</Author>
-                    <CreatedAt>asked 12 mins ago</CreatedAt>
+                    <CreatedAt>{`asked ${howManyTimesAgo(
+                      post.createdAt,
+                    )}`}</CreatedAt>
                   </WrapperMeta>
                 </WrapperBot>
               </SummaryRight>
@@ -339,8 +407,12 @@ function List() {
         <Pagenation>
           <WrapperBtnPage>
             <BtnPage onClick={onClickPrev}>Prev</BtnPage>
-            {pages.slice(1).map(pageNum => (
-              <BtnPage key={pageNum} onClick={onClickPage}>
+            {pages.slice(-5).map(pageNum => (
+              <BtnPage
+                curPage={curPage === pageNum}
+                key={pageNum}
+                onClick={onClickPage}
+              >
                 {pageNum}
               </BtnPage>
             ))}
