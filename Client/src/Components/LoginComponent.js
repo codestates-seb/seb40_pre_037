@@ -1,3 +1,11 @@
+/*
+책임개발자 : 한승호
+최초생성일 : 2022.10.26
+최근수정일 : 2022.11.02
+개요 :
+로그인 페이지 컴포넌트
+*/
+
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
@@ -58,7 +66,7 @@ const Errormsg = styled.p`
   font-size: 12px;
 `;
 
-function LoginComponent({setLogin}) {
+function LoginComponent({ setLogin }) {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState(false);
 
@@ -75,19 +83,17 @@ function LoginComponent({setLogin}) {
         password: data.password,
       })
       .then(res => {
-        console.log(res);
         if (res.headers.authorization) {
           localStorage.setItem('login-token', res.headers.authorization);
           localStorage.setItem('login-refresh', res.headers.refresh);
         }
         setLoginError(false);
       })
-      .then(()=>{
-        setLogin(true)
+      .then(() => {
+        setLogin(true);
         navigate('/');
       })
-      .catch(err => {
-        console.log(err);
+      .catch(() => {
         setLoginError(true);
       });
   };
@@ -111,7 +117,6 @@ function LoginComponent({setLogin}) {
           </svg>{' '}
         </div>
       </Link>
-
       <LoginContainer onSubmit={handleSubmit(onSubmit)}>
         <Formblock>
           <label className="flex--item s-label" htmlFor="email">
