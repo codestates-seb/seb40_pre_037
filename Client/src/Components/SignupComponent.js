@@ -6,7 +6,7 @@
 회원가입 페이지 컴포넌트
 */
 
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -133,6 +133,8 @@ const Errormsg2 = styled.p`
 
 function SignupComponent() {
   const navigate = useNavigate();
+  const [signUpError, setSignUpError] = useState(false);
+  const [errorMessage, setErrormessage] = useState('');
 
   const {
     register,
@@ -148,12 +150,14 @@ function SignupComponent() {
         name: data.name,
         password: data.password,
       })
-      .then(response => {
-        console.log(response);
+      .then(() => {
+        setErrormessage('');
+        setSignUpError(false);
         navigate('/login');
       })
       .catch(error => {
-        console.log(error);
+        setErrormessage(error.response.data.message);
+        setSignUpError(true);
       });
   };
 
@@ -216,6 +220,7 @@ function SignupComponent() {
             {errors.name && errors.name.type === 'required' && (
               <Errormsg>name cannot be empty.</Errormsg>
             )}
+            {signUpError ? <Errormsg>{errorMessage}</Errormsg> : null}
           </Formblock>
           <Formblock>
             <label htmlFor="Email">Email</label>
