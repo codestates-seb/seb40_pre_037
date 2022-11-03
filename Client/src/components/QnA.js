@@ -17,7 +17,6 @@ import TextEditor from './TextEditor';
 const DetailContainer = styled.div`
   max-width: 1100px;
   padding: 24px 16px;
-  margin-left: 165px;
   margin-top: 50px;
 `;
 
