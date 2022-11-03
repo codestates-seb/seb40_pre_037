@@ -268,7 +268,7 @@ export default function Details() {
   };
 
   const editQuestion = () => {
-    navigate(`/api/write/?postId=${detailId}`);
+    navigate(`/write/?postId=${detailId}`);
   };
 
   const callFunction = () => {
