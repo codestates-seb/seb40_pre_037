@@ -15,11 +15,6 @@ export const totalQuestionsAtom = atom({
   default: 0,
 });
 
-export const timeNowAtom = atom({
-  key: 'timeNow',
-  default: 0,
-});
-
 export const pagesAtom = atom({
   key: 'pages',
   default: [],
