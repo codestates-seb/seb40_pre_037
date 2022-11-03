@@ -7,11 +7,14 @@ import LogIn from './pages/LogIn';
 import SignUp from './pages/SignUp';
 import Nav from './components/Nav';
 import LoginedNav from './components/LoginedNav';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 function App() {
   const [login, setLogin] = useState(localStorage.getItem('login-token'));
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       {login ? <LoginedNav setLogin={setLogin} /> : <Nav setLogin={setLogin} />}
       <Routes>
         <Route path="/" element={<BoardList />} />
@@ -20,7 +23,7 @@ function App() {
         <Route path="/login" element={<LogIn setLogin={setLogin} />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
-    </>
+    </QueryClientProvider>
   );
 }
 

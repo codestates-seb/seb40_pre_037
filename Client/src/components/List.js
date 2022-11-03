@@ -1,7 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useRecoilState } from 'recoil';
+import {
+  curPageAtom,
+  pagesAtom,
+  postsAtom,
+  sortByAtom,
+  timeNowAtom,
+  totalPagesAtom,
+  totalQuestionsAtom,
+} from '../atoms';
 
 const Container = styled.main`
   @media screen and (min-width: 1261px) {
@@ -213,13 +224,14 @@ const BtnPage = styled.button`
 `;
 
 function List() {
-  const [posts, setePosts] = useState([]);
-  const [pages, setPages] = useState([]);
-  const [curPage, setCurPage] = useState(1);
-  const [sortBy, setSortBy] = useState('present');
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalQuestions, setTotalQuestions] = useState(0);
-  const [timeNow, setTimeNow] = useState(0);
+  const [posts, setePosts] = useRecoilState(postsAtom);
+  const [pages, setPages] = useRecoilState(pagesAtom);
+  const [curPage, setCurPage] = useRecoilState(curPageAtom);
+  const [sortBy, setSortBy] = useRecoilState(sortByAtom);
+  const [totalPages, setTotalPages] = useRecoilState(totalPagesAtom);
+  const [totalQuestions, setTotalQuestions] =
+    useRecoilState(totalQuestionsAtom);
+  const [timeNow, setTimeNow] = useRecoilState(timeNowAtom);
 
   const navigate = useNavigate();
 
@@ -275,21 +287,19 @@ function List() {
     } ${dateCreatedAt.getDate()}, ${dateCreatedAt.getFullYear()} at ${dateCreatedAt.getHours()}:${dateCreatedAt.getMinutes()}`;
   };
 
-  const fetchPosts = async () => {
-    const response = await axios.get(
-      `/post/${sortBy}?page=${curPage}&size=10`,
-      {
-        headers: {
-          'ngrok-skip-browser-warning': '111',
-        },
+  const { isInitialLoading } = useQuery(
+    ['post', curPage + '', sortBy + ''],
+    () => axios.get(`/post/${sortBy}?page=${curPage}&size=10`),
+    {
+      onSuccess: response => {
+        setePosts(response.data.data);
+        setTotalPages(response.data.pageInfo.totalPages);
+        setTotalQuestions(response.data.pageInfo.totalElements);
+        setTimeNow(Date.now());
       },
-    );
-    // console.log(response.data.data);
-    setePosts(response.data.data);
-    setTotalPages(response.data.pageInfo.totalPages);
-    setTotalQuestions(response.data.pageInfo.totalElements);
-    setTimeNow(Date.now());
-  };
+    },
+  );
+  // console.log(response.data.data);
 
   const getPages = () => {
     const arr = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -330,9 +340,9 @@ function List() {
     setSortBy('like');
   };
 
-  useEffect(() => {
+  /* useEffect(() => {
     fetchPosts();
-  }, [curPage, sortBy]);
+  }, [curPage, sortBy]); */
 
   useEffect(() => {
     getPages();
@@ -342,84 +352,90 @@ function List() {
     navigator();
   }, [sortBy, curPage]);
 
-  console.log(timeNow);
+  // console.log(timeNow);
   return (
     <Container>
-      <Section>
-        <Wrapper>
-          <Title>All Questions</Title>
-          <Link to="/write">
-            <BtnWrite>Ask Question</BtnWrite>
-          </Link>
-        </Wrapper>
-        <Wrapper>
-          <NumOfArticle>{`${totalQuestions} questions`}</NumOfArticle>
-          <div>
-            <BtnSort sortBy={sortBy === 'present'} onClick={onClickNewest}>
-              Newest
-            </BtnSort>
-            <BtnSort sortBy={sortBy === 'view'} onClick={onClickViews}>
-              Views
-            </BtnSort>
-            <BtnSort sortBy={sortBy === 'like'} onClick={onClickVotes}>
-              Votes
-            </BtnSort>
-          </div>
-        </Wrapper>
-      </Section>
-      <Section>
-        <Ul>
-          {posts.map(post => (
-            <Li key={post.postId}>
-              <SummaryLeft>
-                <span>{`${post.likeCount} votes`}</span>
-                <span>{`${post.answerCount ?? '0'} answers`}</span>
-                <span>{`${post.viewCount} views`}</span>
-              </SummaryLeft>
-              <SummaryRight>
-                <Link to={`/detail?postId=${post.postId}`}>
-                  <TitleArticle>{post.title}</TitleArticle>
-                </Link>
-                <p>
-                  {/* post.content.length > 120
+      {isInitialLoading ? (
+        <h1>Loading</h1>
+      ) : (
+        <>
+          <Section>
+            <Wrapper>
+              <Title>All Questions</Title>
+              <Link to="/write">
+                <BtnWrite>Ask Question</BtnWrite>
+              </Link>
+            </Wrapper>
+            <Wrapper>
+              <NumOfArticle>{`${totalQuestions} questions`}</NumOfArticle>
+              <div>
+                <BtnSort sortBy={sortBy === 'present'} onClick={onClickNewest}>
+                  Newest
+                </BtnSort>
+                <BtnSort sortBy={sortBy === 'view'} onClick={onClickViews}>
+                  Views
+                </BtnSort>
+                <BtnSort sortBy={sortBy === 'like'} onClick={onClickVotes}>
+                  Votes
+                </BtnSort>
+              </div>
+            </Wrapper>
+          </Section>
+          <Section>
+            <Ul>
+              {posts.map(post => (
+                <Li key={post.postId}>
+                  <SummaryLeft>
+                    <span>{`${post.likeCount} votes`}</span>
+                    <span>{`${post.answerCount ?? '0'} answers`}</span>
+                    <span>{`${post.viewCount} views`}</span>
+                  </SummaryLeft>
+                  <SummaryRight>
+                    <Link to={`/detail?postId=${post.postId}`}>
+                      <TitleArticle>{post.title}</TitleArticle>
+                    </Link>
+                    <p>
+                      {/* post.content.length > 120
                     ? `${post.content.split('').slice(0, 120).join('')}...`
           : post.content */}
-                  {post.body.replace(/(<([^>]+)>)/gi, '')}
-                </p>
-                <WrapperBot>
-                  <WrapperBtn>
-                    {post.tags.map(tag => (
-                      <BtnTag key={tag}>{tag}</BtnTag>
-                    ))}
-                  </WrapperBtn>
-                  <WrapperMeta>
-                    <Img src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1" />
-                    <Author>{post.memberName}</Author>
-                    <CreatedAt>{`asked ${howManyTimesAgo(
-                      post.createdAt,
-                    )}`}</CreatedAt>
-                  </WrapperMeta>
-                </WrapperBot>
-              </SummaryRight>
-            </Li>
-          ))}
-        </Ul>
-        <Pagenation>
-          <WrapperBtnPage>
-            <BtnPage onClick={onClickPrev}>Prev</BtnPage>
-            {pages.slice(-5).map(pageNum => (
-              <BtnPage
-                curPage={curPage === pageNum}
-                key={pageNum}
-                onClick={onClickPage}
-              >
-                {pageNum}
-              </BtnPage>
-            ))}
-            <BtnPage onClick={onClickNext}>Next</BtnPage>
-          </WrapperBtnPage>
-        </Pagenation>
-      </Section>
+                      {post.body.replace(/(<([^>]+)>)/gi, '')}
+                    </p>
+                    <WrapperBot>
+                      <WrapperBtn>
+                        {post.tags.map(tag => (
+                          <BtnTag key={tag}>{tag}</BtnTag>
+                        ))}
+                      </WrapperBtn>
+                      <WrapperMeta>
+                        <Img src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1" />
+                        <Author>{post.memberName}</Author>
+                        <CreatedAt>{`asked ${howManyTimesAgo(
+                          post.createdAt,
+                        )}`}</CreatedAt>
+                      </WrapperMeta>
+                    </WrapperBot>
+                  </SummaryRight>
+                </Li>
+              ))}
+            </Ul>
+            <Pagenation>
+              <WrapperBtnPage>
+                <BtnPage onClick={onClickPrev}>Prev</BtnPage>
+                {pages.slice(-5).map(pageNum => (
+                  <BtnPage
+                    curPage={curPage === pageNum}
+                    key={pageNum}
+                    onClick={onClickPage}
+                  >
+                    {pageNum}
+                  </BtnPage>
+                ))}
+                <BtnPage onClick={onClickNext}>Next</BtnPage>
+              </WrapperBtnPage>
+            </Pagenation>
+          </Section>
+        </>
+      )}
     </Container>
   );
 }
