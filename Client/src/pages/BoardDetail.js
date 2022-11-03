@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Details from '../components/QnA';
 import AsideLeft from '../components/AsideLeft';
+import Footer from '../components/Footer';
 
 const Main = styled.main`
   display: flex;
@@ -21,6 +22,7 @@ function BoardDetail() {
         <AsideLeft />
         <Details />
       </Section>
+      <Footer />
     </Main>
   );
 }

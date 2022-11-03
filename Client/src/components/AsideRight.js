@@ -9,6 +9,7 @@ const Container = styled.aside`
   margin-top: 75px; // 추후 다른 컴포넌트와 합칠때 고려한 마진입니다.
   margin-left: 20px; // 추후 다른 컴포넌트와 합칠때 고려한 마진입니다.
   height: 100%;
+  margin-bottom: 310px;
 `;
 
 const WrapperOdd = styled.div`

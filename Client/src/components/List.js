@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-
-const tags = ['linux', 'terminal', 'debian', 'gnome', 'ps1'];
-const offsetPage = 5;
+import { Link, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useRecoilState } from 'recoil';
+import {
+  curPageAtom,
+  pagesAtom,
+  postsAtom,
+  sortByAtom,
+  timeNowAtom,
+  totalPagesAtom,
+  totalQuestionsAtom,
+} from '../atoms';
 
 const Container = styled.main`
   @media screen and (min-width: 1261px) {
@@ -66,16 +74,12 @@ const BtnWrite = styled.button`
 const BtnSort = styled.button`
   font-size: 12px;
   padding: 10px;
-  color: #6a737c;
-  background-color: white;
   border: 1px solid rgb(140, 148, 156);
+  color: ${props => (props.sortBy ? '#3b4045' : '#61737c')};
+  background-color: ${props => (props.sortBy ? '#e3e6e8' : 'white')};
   &:hover {
     background-color: #f8f9f9;
     cursor: pointer;
-  }
-  &:first-child {
-    color: #3b4045;
-    background-color: #e3e6e8;
   }
 `;
 
@@ -200,36 +204,110 @@ const BtnPage = styled.button`
   font-size: 12px;
   height: 30px;
   min-width: 30px;
-  color: #3b3035;
-  background-color: white;
   border: 1px solid rgb(226, 228, 230);
+  color: ${props => (props.curPage ? '#fef5ef' : '#3b3035')};
+  background-color: ${props => (props.curPage ? '#f48224' : 'white')};
 
   &:hover {
-    color: #0c0d0e;
-    background-color: #d9d6dc;
+    color: ${props => (props.curPage ? '#fef5ef' : '#0c0d0e')};
+    background-color: ${props => (props.curPage ? '#f48224' : '#d9d6dc')};
     cursor: pointer;
+  }
+
+  &:first-child {
+    margin-right: 20px;
+  }
+
+  &:last-child {
+    margin-left: 20px;
   }
 `;
 
 function List() {
-  const [posts, setePosts] = useState([]);
-  const [pages, setPages] = useState([]);
-  const [curPage, setCurPage] = useState(1);
-  const [pageLasts, setPageLasts] = useState([]);
-  const pageAheads = [1, 2, 3];
+  const [posts, setePosts] = useRecoilState(postsAtom);
+  const [pages, setPages] = useRecoilState(pagesAtom);
+  const [curPage, setCurPage] = useRecoilState(curPageAtom);
+  const [sortBy, setSortBy] = useRecoilState(sortByAtom);
+  const [totalPages, setTotalPages] = useRecoilState(totalPagesAtom);
+  const [totalQuestions, setTotalQuestions] =
+    useRecoilState(totalQuestionsAtom);
+  const [timeNow, setTimeNow] = useRecoilState(timeNowAtom);
 
-  const fetchPosts = async () => {
-    const response = await axios.get('https://koreanjson.com/posts');
-    setePosts(response.data);
+  const navigate = useNavigate();
+
+  const howManyTimesAgo = createdAtUTC => {
+    const createdAt = Date.parse(createdAtUTC);
+    const diffSeconds = Math.round((timeNow - createdAt) / 1000);
+
+    if (diffSeconds < 60) {
+      if (diffSeconds === 1) return '1 sec ago';
+      return `${diffSeconds} secs ago`;
+    }
+
+    const diffMinutes = Math.round(diffSeconds / 60);
+
+    if (diffMinutes < 60) {
+      if (diffMinutes === 1) return '1 sec ago';
+      return `${diffMinutes} mins ago`;
+    }
+
+    const diffHours = Math.round(diffMinutes / 60);
+
+    if (diffHours < 24) {
+      if (diffHours === 1) return '1 hour ago';
+      return `${diffHours} hours ago`;
+    }
+
+    const diffDays = Math.round(diffHours / 24);
+
+    if (diffDays < 3) {
+      if (diffDays === 1) return 'yesterday';
+      return '2 days ago';
+    }
+
+    const dateCreatedAt = new Date(createdAt);
+
+    const month = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return `${
+      month[dateCreatedAt.getMonth()]
+    } ${dateCreatedAt.getDate()}, ${dateCreatedAt.getFullYear()} at ${dateCreatedAt.getHours()}:${dateCreatedAt.getMinutes()}`;
   };
 
+  const { isInitialLoading } = useQuery(
+    ['post', curPage + '', sortBy + ''],
+    () => axios.get(`/post/${sortBy}?page=${curPage}&size=10`),
+    {
+      onSuccess: response => {
+        setePosts(response.data.data);
+        setTotalPages(response.data.pageInfo.totalPages);
+        setTotalQuestions(response.data.pageInfo.totalElements);
+        setTimeNow(Date.now());
+      },
+    },
+  );
+  // console.log(response.data.data);
+
   const getPages = () => {
-    const arr = Array.from(
-      { length: Math.ceil(posts.length / 30) + 1 },
-      (_, i) => i,
-    );
+    const arr = Array.from({ length: totalPages }, (_, i) => i + 1);
     setPages(arr);
-    setPageLasts(arr.slice(-3));
+  };
+
+  const navigator = () => {
+    navigate(`?sortBy=${sortBy}&page=${curPage}`);
   };
 
   const onClickPage = event => {
@@ -247,115 +325,117 @@ function List() {
     setCurPage(prev => prev + 1);
   };
 
-  useEffect(() => {
+  const onClickNewest = event => {
+    event.preventDefault();
+    setSortBy('present');
+  };
+
+  const onClickViews = event => {
+    event.preventDefault();
+    setSortBy('view');
+  };
+
+  const onClickVotes = event => {
+    event.preventDefault();
+    setSortBy('like');
+  };
+
+  /* useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [curPage, sortBy]); */
 
   useEffect(() => {
     getPages();
   }, [posts]);
+
+  useEffect(() => {
+    navigator();
+  }, [sortBy, curPage]);
+
+  // console.log(timeNow);
   return (
     <Container>
-      <Section>
-        <Wrapper>
-          <Title>All Questions</Title>
-          <Link to="/write">
-            <BtnWrite>Ask Question</BtnWrite>
-          </Link>
-        </Wrapper>
-        <Wrapper>
-          <NumOfArticle>23,156,270 questions</NumOfArticle>
-          <div>
-            <BtnSort>Newest</BtnSort>
-            <BtnSort>Views</BtnSort>
-            <BtnSort>Votes</BtnSort>
-          </div>
-        </Wrapper>
-      </Section>
-      <Section>
-        <Ul>
-          {posts.slice(0, 30).map(post => (
-            <Li key={post.id}>
-              <SummaryLeft>
-                <span>{`${post.id} votes`}</span>
-                <span>{`${post.id} answers`}</span>
-                <span>{`${post.id} views`}</span>
-              </SummaryLeft>
-              <SummaryRight>
-                <Link to="/detail">
-                  <TitleArticle>{post.title}</TitleArticle>
-                </Link>
-                <p>
-                  {post.content.length > 120
-                    ? `${post.content.split('').slice(0, 120).join('')}...`
-                    : post.content}
-                </p>
-                <WrapperBot>
-                  <WrapperBtn>
-                    {tags.map(tag => (
-                      <BtnTag key={tag}>{tag}</BtnTag>
-                    ))}
-                  </WrapperBtn>
-                  <WrapperMeta>
-                    <Img src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1" />
-                    <Link to="user/:id">
-                      <Author>Thomas</Author>
+      {isInitialLoading ? (
+        <h1>Loading</h1>
+      ) : (
+        <>
+          <Section>
+            <Wrapper>
+              <Title>All Questions</Title>
+              <Link to="/write">
+                <BtnWrite>Ask Question</BtnWrite>
+              </Link>
+            </Wrapper>
+            <Wrapper>
+              <NumOfArticle>{`${totalQuestions} questions`}</NumOfArticle>
+              <div>
+                <BtnSort sortBy={sortBy === 'present'} onClick={onClickNewest}>
+                  Newest
+                </BtnSort>
+                <BtnSort sortBy={sortBy === 'view'} onClick={onClickViews}>
+                  Views
+                </BtnSort>
+                <BtnSort sortBy={sortBy === 'like'} onClick={onClickVotes}>
+                  Votes
+                </BtnSort>
+              </div>
+            </Wrapper>
+          </Section>
+          <Section>
+            <Ul>
+              {posts.map(post => (
+                <Li key={post.postId}>
+                  <SummaryLeft>
+                    <span>{`${post.likeCount} votes`}</span>
+                    <span>{`${post.answerCount ?? '0'} answers`}</span>
+                    <span>{`${post.viewCount} views`}</span>
+                  </SummaryLeft>
+                  <SummaryRight>
+                    <Link to={`/detail?postId=${post.postId}`}>
+                      <TitleArticle>{post.title}</TitleArticle>
                     </Link>
-                    <CreatedAt>asked 12 mins ago</CreatedAt>
-                  </WrapperMeta>
-                </WrapperBot>
-              </SummaryRight>
-            </Li>
-          ))}
-        </Ul>
-        <Pagenation>
-          <WrapperBtnPage>
-            {pageAheads.includes(curPage) ? (
-              <>
-                {pages.slice(1, 6).map(pageNum => (
-                  <BtnPage key={pageNum} onClick={onClickPage}>
-                    {pageNum}
-                  </BtnPage>
-                ))}
-                <span>...</span>
-                <BtnPage onClick={onClickPage}>
-                  {pages[pages.length - 1]}
-                </BtnPage>
-                <BtnPage onClick={onClickNext}>Next</BtnPage>
-              </>
-            ) : pageLasts.includes(curPage) ? (
-              <>
+                    <p>
+                      {/* post.content.length > 120
+                    ? `${post.content.split('').slice(0, 120).join('')}...`
+          : post.content */}
+                      {post.body.replace(/(<([^>]+)>)/gi, '')}
+                    </p>
+                    <WrapperBot>
+                      <WrapperBtn>
+                        {post.tags.map(tag => (
+                          <BtnTag key={tag}>{tag}</BtnTag>
+                        ))}
+                      </WrapperBtn>
+                      <WrapperMeta>
+                        <Img src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1" />
+                        <Author>{post.memberName}</Author>
+                        <CreatedAt>{`asked ${howManyTimesAgo(
+                          post.createdAt,
+                        )}`}</CreatedAt>
+                      </WrapperMeta>
+                    </WrapperBot>
+                  </SummaryRight>
+                </Li>
+              ))}
+            </Ul>
+            <Pagenation>
+              <WrapperBtnPage>
                 <BtnPage onClick={onClickPrev}>Prev</BtnPage>
-                <BtnPage onClick={onClickPage}>{pages[1]}</BtnPage>
-                <span>...</span>
                 {pages.slice(-5).map(pageNum => (
-                  <BtnPage key={pageNum} onClick={onClickPage}>
+                  <BtnPage
+                    curPage={curPage === pageNum}
+                    key={pageNum}
+                    onClick={onClickPage}
+                  >
                     {pageNum}
                   </BtnPage>
                 ))}
-              </>
-            ) : (
-              <>
-                <BtnPage onClick={onClickPrev}>Prev</BtnPage>
-                <BtnPage onClick={onClickPage}>{pages[1]}</BtnPage>
-                <span>...</span>
-                {pages
-                  .slice(curPage - 2, curPage + offsetPage - 2)
-                  .map(pageNum => (
-                    <BtnPage key={pageNum} onClick={onClickPage}>
-                      {pageNum}
-                    </BtnPage>
-                  ))}
-                <span>...</span>
-                <BtnPage onClick={onClickPage}>
-                  {pages[pages.length - 1]}
-                </BtnPage>
                 <BtnPage onClick={onClickNext}>Next</BtnPage>
-              </>
-            )}
-          </WrapperBtnPage>
-        </Pagenation>
-      </Section>
+              </WrapperBtnPage>
+            </Pagenation>
+          </Section>
+        </>
+      )}
     </Container>
   );
 }

@@ -1,7 +1,16 @@
+/*
+책임개발자 : 한승호
+최초생성일 : 2022.10.26
+최근수정일 : 2022.11.02
+개요 :
+회원가입 페이지 컴포넌트
+*/
+
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useForm } from 'react-hook-form';
 
 const PageLayout = styled.div`
   width: 100%;
@@ -40,7 +49,7 @@ const SignUpContainer = styled.div`
     rgba(0, 0, 0, 0.05) 0px 20px 48px 0px, rgba(0, 0, 0, 0.1) 0px 1px 4px 0px;
 `;
 
-const Formblock = styled.div`
+const Formblock = styled.form`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -52,27 +61,32 @@ const Formblock = styled.div`
       background-color: #0074cc;
     }
   }
-  > form {
+  > label {
     margin: 6px 0px;
-  }
-  > form > label {
     font-size: 15px;
+    font-weight: bold;
   }
 `;
 
-// const HeadText = styled.div`
-//   text-align: center;
-//   display: block;
-//   font-size: 21px;
-//   color: #232629;
-//   margin-bottom: 24px;
-// `;
+const HeadText = styled.div`
+  text-align: center;
+  display: block;
+  font-size: 21px;
+  color: #232629;
+  margin-bottom: 24px;
+  @media screen and (min-width: 817px) {
+    display: none;
+  }
+`;
 
 const TextBox = styled.div`
   display: flex;
   width: 410px;
   height: 285px;
   display: block;
+  @media screen and (max-width: 816px) {
+    display: none;
+  }
 `;
 
 const TitleText = styled.div`
@@ -94,29 +108,56 @@ const LeftText = styled.div`
   align-items: center;
 `;
 
+const Input = styled.input`
+  display: block;
+  width: 260px;
+  height: 35px;
+  padding: 0;
+`;
+
+const Errormsg = styled.p`
+  display: block;
+  color: #d0393e;
+  margin: 2px 0px;
+  padding: 2px;
+  font-size: 12px;
+`;
+
+const Errormsg2 = styled.p`
+  display: block;
+  color: #d0393e;
+  margin: 2px 0px;
+  padding: 2px 2px 2px 20px;
+  font-size: 12px;
+`;
+
 function SignupComponent() {
-  const [inputName, setInputName] = useState('');
-  const [inputEmail, setInputEmail] = useState('');
-  const [inputPassword, setInputPassword] = useState('');
   const navigate = useNavigate();
+  const [signUpError, setSignUpError] = useState(false);
+  const [errorMessage, setErrormessage] = useState('');
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const data = {
-      email: inputEmail,
-      name: inputName,
-      password: inputPassword,
-    };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
 
-    return axios
-      .post('/members', data)
-      .then(response => {
-        console.log(response);
+  const onSubmit = data => {
+    axios
+      .post('/members', {
+        email: data.Email,
+        name: data.name,
+        password: data.password,
+      })
+      .then(() => {
+        setErrormessage('');
+        setSignUpError(false);
         navigate('/login');
       })
       .catch(error => {
-        console.log(error);
-        navigate('/');
+        setErrormessage(error.response.data.message);
+        setSignUpError(true);
       });
   };
 
@@ -162,77 +203,89 @@ function SignupComponent() {
         </TitleBox>
       </TextBox>
       <SignUpPage>
-        {/* <HeadText>
+        <HeadText>
           Create your Stack Overflow account. It’s free and only takes a minute.
-        </HeadText> */}
-        <button
-          className="flex--item s-btn s-btn__icon s-btn__github bar-md ba bc-black-100"
-          type="button"
-          style={{ margin: '4px 0px 16px 0px', width: '318px' }}
-          display="flex"
-        >
-          <svg
-            aria-hidden="true"
-            className="svg-icon iconGitHub"
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-          >
-            <path
-              d="M9 1a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.42 7.42 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8.01 8.01 0 0 0 9 1Z"
-              fill="#010101"
+        </HeadText>
+        <SignUpContainer onSubmit={handleSubmit(onSubmit)}>
+          <Formblock>
+            <label htmlFor="Display name">Display name</label>
+            <Input
+              className="flex--item s-input"
+              type="name"
+              id="Display name"
+              {...register('name', {
+                required: true,
+              })}
             />
-          </svg>{' '}
-          Sign up with GitHub{' '}
-        </button>
-        <SignUpContainer>
-          <Formblock>
-            <form className="d-flex gs4 gsy fd-column">
-              <label className="flex--item s-label" htmlFor="Display name">
-                Display name
-              </label>
-              <div className="d-flex ps-relative">
-                <input
-                  className="flex--item s-input"
-                  type="name"
-                  id="Display name"
-                  value={inputName}
-                  onChange={e => setInputName(e.target.value)}
-                />
-              </div>
-            </form>
+            {errors.name && errors.name.type === 'required' && (
+              <Errormsg>name cannot be empty.</Errormsg>
+            )}
+            {signUpError ? <Errormsg>{errorMessage}</Errormsg> : null}
           </Formblock>
           <Formblock>
-            <form className="d-flex gs4 gsy fd-column">
-              <label className="flex--item s-label" htmlFor="Email">
-                Email
-              </label>
-              <div className="d-flex ps-relative">
-                <input
-                  className="flex--item s-input"
-                  type="Email"
-                  id="Email"
-                  value={inputEmail}
-                  onChange={e => setInputEmail(e.target.value)}
-                />
-              </div>
-            </form>
+            <label htmlFor="Email">Email</label>
+            <Input
+              className="flex--item s-input"
+              type="Email"
+              id="Email"
+              {...register('Email', {
+                required: true,
+                validate: {
+                  emailcheck: value =>
+                    (value &&
+                      /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g.test(
+                        value,
+                      )) ||
+                    `${watch('Email')} is not a valid email address`,
+                },
+              })}
+            />
+            {errors.Email && errors.Email.type === 'required' && (
+              <Errormsg>Email cannot be empty.</Errormsg>
+            )}
+            {errors.Email && errors.Email.type === 'emailcheck' && (
+              <Errormsg>{errors.Email.message}</Errormsg>
+            )}
           </Formblock>
           <Formblock>
-            <form className="d-flex gs4 gsy fd-column">
-              <label className="flex--item s-label" htmlFor="password">
-                Password
-              </label>
-              <div className="d-flex ps-relative">
-                <input
-                  className="flex--item s-input"
-                  type="password"
-                  id="password"
-                  value={inputPassword}
-                  onChange={e => setInputPassword(e.target.value)}
-                />
-              </div>
-            </form>
+            <label htmlFor="password">Password</label>
+            <Input
+              className="flex--item s-input"
+              type="password"
+              id="password"
+              {...register('password', {
+                required: true,
+                validate: {
+                  numcheck: value =>
+                    (value && /\d/.test(value)) ||
+                    'Please add one of the following things to make your password stronger:',
+                  lettercheck: value =>
+                    (value && /[a-zA-Z]/.test(value)) ||
+                    'Please add one of the following things to make your password stronger:',
+                },
+                minLength: 8,
+              })}
+            />
+            {errors.password && errors.password.type === 'required' && (
+              <Errormsg>Password cannot be empty.</Errormsg>
+            )}
+            {errors.password && errors.password.type === 'numcheck' && (
+              <Errormsg>{errors.password.message}</Errormsg>
+            )}
+            {errors.password && errors.password.type === 'numcheck' && (
+              <Errormsg2>• numbers</Errormsg2>
+            )}
+            {errors.password && errors.password.type === 'lettercheck' && (
+              <Errormsg>{errors.password.message}</Errormsg>
+            )}
+            {errors.password && errors.password.type === 'lettercheck' && (
+              <Errormsg2>• letters</Errormsg2>
+            )}
+            {errors.password && errors.password.type === 'minLength' && (
+              <Errormsg>
+                Must contain at least {8 - watch('password').length} characters.
+              </Errormsg>
+            )}
           </Formblock>
           <p
             style={{
@@ -251,7 +304,8 @@ function SignupComponent() {
             <button
               className="s-btn s-btn__primary"
               type="button"
-              onClick={handleSubmit}
+              onClick={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(onSubmit)}
             >
               Sign up
             </button>
@@ -259,10 +313,7 @@ function SignupComponent() {
           </Formblock>
         </SignUpContainer>
         <div style={{ padding: '16px', fontSize: '14px', lineHeight: '17px' }}>
-          Already have an account?{' '}
-          <Link to="/login">
-            <a href="/users/signup">Log in</a>
-          </Link>
+          Already have an account? <a href="/login">Log in</a>
         </div>
       </SignUpPage>
     </PageLayout>

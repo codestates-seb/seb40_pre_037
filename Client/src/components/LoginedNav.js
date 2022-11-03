@@ -1,7 +1,16 @@
+/*
+책임개발자 : 최유정
+최초생성일 : 2022.10.26
+최근수정일 : 2022.11.3
+개요 :
+login후에 nav
+
+*/
 import React from 'react';
 import * as Icons from '@stackoverflow/stacks-icons';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const NavContainer = styled.div`
   position: fixed;
@@ -34,7 +43,36 @@ const Search = styled.div`
   left: 27px;
 `;
 
-function Nav() {
+const Email = styled.span`
+  width: 128px;
+  text-align: center;
+`;
+
+const UserDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+function LoginedNav({ setLogin }) {
+  const navigate = useNavigate();
+  const logOutButton = () => {
+    axios
+      .delete(`/members/logout`, {
+        headers: { Refresh: `${localStorage.getItem('login-refresh')}` },
+      })
+      .then(() => {
+        localStorage.removeItem('login-token');
+        localStorage.removeItem('login-refresh');
+        setLogin(false);
+        navigate(`/?sortBy=present&page=1`);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+  const logined = localStorage.getItem('login-token');
+  const payload = logined.split('.')[1];
+  const { username } = JSON.parse(atob(payload));
   return (
     <NavContainer className="bs-sm bt btw3 z-selected bc-orange-400">
       <nav className="d-flex ai-center jc-end fd-row">
@@ -81,26 +119,20 @@ function Nav() {
           />
         </div>
         <div className="flex--item d-flex">
-          <Link to="/login">
+          <UserDiv>
             <button
+              onClick={logOutButton}
               className="s-btn s-btn__filled flex--item ml8 s-btn__sm w64"
               type="button"
             >
-              Log in
+              Log out
             </button>
-          </Link>
-          <Link to="/signup">
-            <button
-              className="s-btn s-btn__primary flex--item mr8 ml4 s-btn__sm bg-blue-500 w64"
-              type="button"
-            >
-              Sign up
-            </button>
-          </Link>
+            <Email className="w128">{username}</Email>
+          </UserDiv>
         </div>
       </nav>
     </NavContainer>
   );
 }
 
-export default Nav;
+export default LoginedNav;
