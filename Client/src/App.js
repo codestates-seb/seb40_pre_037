@@ -14,7 +14,7 @@ const queryClient = new QueryClient();
 
 function App() {
   const [login, setLogin] = useState(localStorage.getItem('login-token'));
-  // const [initial, setInitial] = useState(false);
+  const [ref, setRef] = useState(false);
 
   const refresh = () => {
     axios
@@ -33,8 +33,6 @@ function App() {
             'login-token',
             `Bearer ${res.headers.authorization}`,
           );
-          setInterval(refresh, 5000);
-          // setInitial(true);
         }
       })
       .catch(error => {
@@ -43,14 +41,13 @@ function App() {
   };
 
   useEffect(() => {
-    if (login !== null) {
-      refresh();
+    if (login) {
+      setTimeout(() => {
+        refresh();
+        setRef(!ref);
+      }, 540000);
     }
-    // if (initial) {
-    //   refresh();
-    //   setInitial(false);
-    // }
-  }, [login]);
+  }, [login, ref]);
 
   return (
     <QueryClientProvider client={queryClient}>
