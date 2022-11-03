@@ -1,15 +1,7 @@
 {
     "rewrites": [
       {
-        "source": "/post/:path*",
-        "destination": "http://ec2-15-164-93-71.ap-northeast-2.compute.amazonaws.com:8080/:path*"
-      },
-      {
-        "source": "/members/:path*",
-        "destination": "http://ec2-15-164-93-71.ap-northeast-2.compute.amazonaws.com:8080/:path*"
-      },
-      {
-        "source": "/answers/:path*",
+        "source": "/api/:path*",
         "destination": "http://ec2-15-164-93-71.ap-northeast-2.compute.amazonaws.com:8080/:path*"
       }
     ]

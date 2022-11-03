@@ -203,7 +203,7 @@ function Ask() {
   const navigate = useNavigate();
   useEffect(() => {
     if (detailId) {
-      axios.get(`/post/${detailId}`).then(res => {
+      axios.get(`/api/post/${detailId}`).then(res => {
         setTitleValue(res.data.title);
         setTagItem(res.data.tags);
         setValue(editorRef.current.getInstance().setHTML(res.data.body));
@@ -271,7 +271,7 @@ function Ask() {
       if (detailId) {
         axios
           .patch(
-            `/post/${detailId}`,
+            `/api/post/${detailId}`,
             {
               title: titleValue,
               body: value,
@@ -287,7 +287,7 @@ function Ask() {
       } else {
         axios
           .post(
-            '/post',
+            '/api/post',
             {
               title: titleValue,
               body: value,
