@@ -171,15 +171,10 @@ export default function Details() {
         'ngrok-skip-browser-warning': '111',
       },
     };
-    return axios
-      .get(`/api/post/${id}`, header)
-      .then(res => {
-        setPost(res.data);
-        return res.data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    return axios.get(`/api/post/${id}`, header).then(res => {
+      setPost(res.data);
+      return res.data;
+    });
   };
 
   const getAnswer = id => {
@@ -188,15 +183,10 @@ export default function Details() {
         'ngrok-skip-browser-warning': '111',
       },
     };
-    return axios
-      .get(`/api/answers/${id}`, header)
-      .then(res => {
-        setAnswer(res.data);
-        return res.data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    return axios.get(`/api/answers/${id}`, header).then(res => {
+      setAnswer(res.data);
+      return res.data;
+    });
   };
 
   const getAnsId = res => {
@@ -208,9 +198,7 @@ export default function Details() {
     const header = {
       headers: { authorization: `${token}` },
     };
-    axios.post(`/api/post/like/up/${id}`, {}, header).catch(error => {
-      console.log(error);
-    });
+    axios.post(`/api/post/like/up/${id}`, {}, header);
     setUpdate(true);
   };
 
@@ -218,9 +206,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.post(`/api/post/like/down/${id}`, {}, header).catch(error => {
-      console.log(error);
-    });
+    axios.post(`/api/post/like/down/${id}`, {}, header);
     setUpdate(true);
   };
 
@@ -228,9 +214,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.post(`/api/answers/like/up/${id}`, {}, header).catch(error => {
-      console.log(error);
-    });
+    axios.post(`/api/answers/like/up/${id}`, {}, header);
     setUpdate(true);
   };
 
@@ -238,9 +222,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.post(`/api/answers/like/down/${id}`, {}, header).catch(error => {
-      console.log(error);
-    });
+    axios.post(`/api/answers/like/down/${id}`, {}, header);
     setUpdate(true);
   };
 
@@ -249,11 +231,11 @@ export default function Details() {
       headers: { authorization: token },
     };
     if (sendAnswer) {
-      axios
-        .post(`/api/answers`, { postId: +detailId, answerBody: value }, header)
-        .catch(error => {
-          console.log(error);
-        });
+      axios.post(
+        `/api/answers`,
+        { postId: +detailId, answerBody: value },
+        header,
+      );
       setUpdate(true);
     }
   };
@@ -262,7 +244,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.delete(`/api/post/${detailId}`, header).catch(e => console.log(e));
+    axios.delete(`/api/post/${detailId}`, header);
     setUpdate(true);
     navigate('/');
   };
