@@ -65,9 +65,6 @@ function LoginedNav({ setLogin }) {
         localStorage.removeItem('login-refresh');
         setLogin(false);
         navigate(`/?sortBy=present&page=1`);
-      })
-      .catch(error => {
-        console.log(error);
       });
   };
   const logined = localStorage.getItem('login-token');

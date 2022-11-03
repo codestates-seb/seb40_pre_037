@@ -203,15 +203,11 @@ function Ask() {
   const navigate = useNavigate();
   useEffect(() => {
     if (detailId) {
-      axios
-        .get(`/api/post/${detailId}`)
-        .then(res => {
-          console.log(res.data);
-          setTitleValue(res.data.title);
-          setTagItem(res.data.tags);
-          setValue(editorRef.current.getInstance().setHTML(res.data.body));
-        })
-        .catch(err => console.log(err));
+      axios.get(`/api/post/${detailId}`).then(res => {
+        setTitleValue(res.data.title);
+        setTagItem(res.data.tags);
+        setValue(editorRef.current.getInstance().setHTML(res.data.body));
+      });
     }
   }, []);
 
@@ -221,7 +217,6 @@ function Ask() {
       .getInstance()
       .getHTML()
       .replace(/<[^>]*>?/g, ''); // html태그 제거 정규식 대박...
-    console.log(data);
     setValidValue(datas);
     setValue(data);
     // if (datas.trim().length >= 15) {
@@ -288,11 +283,7 @@ function Ask() {
               },
             },
           )
-          .then(res => {
-            console.log(res);
-          })
-          .then(defaultValue())
-          .catch(err => console.log(err));
+          .then(defaultValue());
       } else {
         axios
           .post(
@@ -308,16 +299,9 @@ function Ask() {
               },
             },
           )
-          .then(res => {
-            console.log(res);
-          })
-          .then(res => console.log(res))
-          .then(defaultValue())
-          .catch(err => console.log(err));
+          .then(defaultValue());
       }
     } else {
-      console.log('유효성');
-      console.log(titleValue, value, tagItem);
       setValidTitleTest(false);
       setValidBodyTest(false);
       setValidTagTest(false);
