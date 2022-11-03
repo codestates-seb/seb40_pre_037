@@ -228,7 +228,7 @@ export default function Details() {
 
   const countUpA = id => {
     const header = {
-      headers: { authorization: `${token}` },
+      headers: { authorization: token },
     };
     axios.post(`/answers/like/up/${id}`, {}, header).catch(error => {
       console.log(error);
@@ -264,7 +264,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.delete(`/여기 url 자리에요`, header).catch(e => console.log(e));
+    axios.delete(`/post/${detailId}`, header).catch(e => console.log(e));
     setUpdate(true);
   };
 
