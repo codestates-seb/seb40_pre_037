@@ -12,11 +12,7 @@ const WrapperAll = styled.div`
 
 const WrapperBody = styled.div`
   margin: 0 auto;
-`;
-
-const WrapperMain = styled.div`
   display: flex;
-  margin-left: 165px;
 `;
 
 const WrapperFooter = styled.div``;
@@ -26,10 +22,8 @@ function BoardList() {
     <WrapperAll>
       <WrapperBody>
         <AsideLeft />
-        <WrapperMain>
-          <List />
-          <AsideRight />
-        </WrapperMain>
+        <List />
+        <AsideRight />
       </WrapperBody>
       <WrapperFooter>
         <Footer />

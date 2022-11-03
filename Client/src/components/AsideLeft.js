@@ -7,7 +7,6 @@ const Container = styled.aside`
   width: 155px;
   margin-left: 10px;
   margin-top: 75px; // 추후 다른 컴포넌트와 합칠때 고려한 마진입니다.
-  position: fixed;
 `;
 
 const TopBox = styled.div`
@@ -54,7 +53,7 @@ const WrapperTab = styled.div`
 const Ul = styled.ul`
   div {
     position: absolute;
-    top: 93px;
+    top: 168px;
     font-size: 13px;
   }
 `;
