@@ -9,7 +9,6 @@ import {
   pagesAtom,
   postsAtom,
   sortByAtom,
-  timeNowAtom,
   totalPagesAtom,
   totalQuestionsAtom,
 } from '../atoms';
@@ -231,13 +230,12 @@ function List() {
   const [totalPages, setTotalPages] = useRecoilState(totalPagesAtom);
   const [totalQuestions, setTotalQuestions] =
     useRecoilState(totalQuestionsAtom);
-  const [timeNow, setTimeNow] = useRecoilState(timeNowAtom);
 
   const navigate = useNavigate();
 
   const howManyTimesAgo = createdAtUTC => {
-    const createdAt = Date.parse(createdAtUTC);
-    const diffSeconds = Math.round((timeNow - createdAt) / 1000);
+    const createdAt = Date.parse(createdAtUTC.replace('T', 'Z'));
+    const diffSeconds = Math.round((Date.now() - createdAt) / 1000);
 
     if (diffSeconds < 60) {
       if (diffSeconds === 1) return '1 sec ago';
@@ -265,7 +263,7 @@ function List() {
       return '2 days ago';
     }
 
-    const dateCreatedAt = new Date(createdAt);
+    const dateCreatedAt = new Date(createdAt - 32400000);
 
     const month = [
       'Jan',
@@ -295,7 +293,6 @@ function List() {
         setePosts(response.data.data);
         setTotalPages(response.data.pageInfo.totalPages);
         setTotalQuestions(response.data.pageInfo.totalElements);
-        setTimeNow(Date.now());
       },
     },
   );
@@ -388,7 +385,7 @@ function List() {
                   <Li key={post.postId}>
                     <SummaryLeft>
                       <span>{`${post.likeCount} votes`}</span>
-                      <span>{`${post.answerCount && '0'} answers`}</span>
+                      <span>{`${post.answerCount} answers`}</span>
                       <span>{`${post.viewCount} views`}</span>
                     </SummaryLeft>
                     <SummaryRight>
