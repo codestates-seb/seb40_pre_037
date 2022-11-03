@@ -10,6 +10,7 @@ import React from 'react';
 import * as Icons from '@stackoverflow/stacks-icons';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const NavContainer = styled.div`
   position: fixed;
@@ -55,10 +56,19 @@ const UserDiv = styled.div`
 function LoginedNav({ setLogin }) {
   const navigate = useNavigate();
   const logOutButton = () => {
-    localStorage.removeItem('login-token');
-    localStorage.removeItem('login-refresh');
-    setLogin(false);
-    navigate(`/?sortBy=present&page=1`);
+    axios
+      .delete(`/members/logout`, {
+        headers: { Refresh: `${localStorage.getItem('login-refresh')}` },
+      })
+      .then(() => {
+        localStorage.removeItem('login-token');
+        localStorage.removeItem('login-refresh');
+        setLogin(false);
+        navigate(`/?sortBy=present&page=1`);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
   const logined = localStorage.getItem('login-token');
   const payload = logined.split('.')[1];
