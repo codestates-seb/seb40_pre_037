@@ -273,9 +273,12 @@ export default function Details() {
   };
 
   const callFunction = () => {
-    const decode = jwt(token.split(' ')[1]);
-    if (decode.nickname !== post.memberName) {
-      return '';
+    if (token) {
+      // 이부분 if문 안넣으면 제가 작업한거랑 합쳤을때 오류가 나서요ㅜㅜ 혹시 필요없거나 로직 망가지면 지워주세요!! 감사합니다~~!!
+      const decode = jwt(token.split(' ')[1]);
+      if (decode.nickname !== post.memberName) {
+        return '';
+      }
     }
     return (
       <FunctionContainer>

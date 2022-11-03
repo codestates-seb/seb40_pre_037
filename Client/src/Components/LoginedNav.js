@@ -1,14 +1,15 @@
 /*
 책임개발자 : 최유정
 최초생성일 : 2022.10.26
-최근수정일 : 2022.11.1
+최근수정일 : 2022.11.3
 개요 :
 login후에 nav
+
 */
 import React from 'react';
 import * as Icons from '@stackoverflow/stacks-icons';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const NavContainer = styled.div`
   position: fixed;
@@ -52,10 +53,12 @@ const UserDiv = styled.div`
   align-items: center;
 `;
 function LoginedNav({ setLogin }) {
+  const navigate = useNavigate();
   const logOutButton = () => {
     localStorage.removeItem('login-token');
     localStorage.removeItem('login-refresh');
     setLogin(false);
+    navigate(`/?sortBy=present&page=1`);
   };
   const logined = localStorage.getItem('login-token');
   const payload = logined.split('.')[1];
