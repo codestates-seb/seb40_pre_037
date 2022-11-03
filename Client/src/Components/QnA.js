@@ -266,6 +266,7 @@ export default function Details() {
     };
     axios.delete(`/post/${detailId}`, header).catch(e => console.log(e));
     setUpdate(true);
+    navigate('/');
   };
 
   const editQuestion = () => {
@@ -273,30 +274,33 @@ export default function Details() {
   };
 
   const callFunction = () => {
-    const decode = jwt(token.split(' ')[1]);
-    if (decode.nickname !== post.memberName) {
-      return '';
+    if (token) {
+      const decode = jwt(token.split(' ')[1]);
+      if (decode.nickname !== post.memberName) {
+        return '';
+      }
+      return (
+        <FunctionContainer>
+          <div
+            role="presentation"
+            type="button"
+            onClick={editQuestion}
+            className="s-menu"
+          >
+            edit
+          </div>
+          <div
+            role="presentation"
+            type="button"
+            onClick={deleteQuestion}
+            className="s-menu"
+          >
+            delete
+          </div>
+        </FunctionContainer>
+      );
     }
-    return (
-      <FunctionContainer>
-        <div
-          role="presentation"
-          type="button"
-          onClick={editQuestion}
-          className="s-menu"
-        >
-          edit
-        </div>
-        <div
-          role="presentation"
-          type="button"
-          onClick={deleteQuestion}
-          className="s-menu"
-        >
-          delete
-        </div>
-      </FunctionContainer>
-    );
+    return '';
   };
 
   const getTime = res => {
