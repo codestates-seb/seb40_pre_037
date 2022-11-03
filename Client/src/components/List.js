@@ -234,7 +234,7 @@ function List() {
   const navigate = useNavigate();
 
   const howManyTimesAgo = createdAtUTC => {
-    const createdAt = Date.parse(createdAtUTC);
+    const createdAt = Date.parse(createdAtUTC.replace('T', 'Z'));
     const diffSeconds = Math.round((Date.now() - createdAt) / 1000);
 
     if (diffSeconds < 60) {
@@ -263,7 +263,7 @@ function List() {
       return '2 days ago';
     }
 
-    const dateCreatedAt = new Date(createdAt);
+    const dateCreatedAt = new Date(createdAt - 32400000);
 
     const month = [
       'Jan',
