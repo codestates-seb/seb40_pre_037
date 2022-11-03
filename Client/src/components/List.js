@@ -288,7 +288,7 @@ function List() {
   };
 
   const { isInitialLoading } = useQuery(
-    ['post', curPage + '', sortBy + ''],
+    ['post', `${curPage}`, `${sortBy}`],
     () => axios.get(`/post/${sortBy}?page=${curPage}&size=10`),
     {
       onSuccess: response => {
@@ -387,7 +387,7 @@ function List() {
                 <Li key={post.postId}>
                   <SummaryLeft>
                     <span>{`${post.likeCount} votes`}</span>
-                    <span>{`${post.answerCount ?? '0'} answers`}</span>
+                    <span>{`${post.answerCount && '0'} answers`}</span>
                     <span>{`${post.viewCount} views`}</span>
                   </SummaryLeft>
                   <SummaryRight>
