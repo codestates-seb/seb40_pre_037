@@ -1,9 +1,7 @@
 /*
 책임개발자 : 전은혜
 최초생성일 : 2022.10.26
-최근수정일 : 2022.10.27
-개요 :
-- 추후 수정
+최근수정일 : 2022.11.03
 */
 
 import React, { useEffect, useState } from 'react';
@@ -266,6 +264,7 @@ export default function Details() {
     };
     axios.delete(`/post/${detailId}`, header).catch(e => console.log(e));
     setUpdate(true);
+    navigate('/');
   };
 
   const editQuestion = () => {
@@ -274,32 +273,32 @@ export default function Details() {
 
   const callFunction = () => {
     if (token) {
-      // 이부분 if문 안넣으면 제가 작업한거랑 합쳤을때 오류가 나서요ㅜㅜ 혹시 필요없거나 로직 망가지면 지워주세요!! 감사합니다~~!!
       const decode = jwt(token.split(' ')[1]);
       if (decode.nickname !== post.memberName) {
         return '';
       }
+      return (
+        <FunctionContainer>
+          <div
+            role="presentation"
+            type="button"
+            onClick={editQuestion}
+            className="s-menu"
+          >
+            edit
+          </div>
+          <div
+            role="presentation"
+            type="button"
+            onClick={deleteQuestion}
+            className="s-menu"
+          >
+            delete
+          </div>
+        </FunctionContainer>
+      );
     }
-    return (
-      <FunctionContainer>
-        <div
-          role="presentation"
-          type="button"
-          onClick={editQuestion}
-          className="s-menu"
-        >
-          edit
-        </div>
-        <div
-          role="presentation"
-          type="button"
-          onClick={deleteQuestion}
-          className="s-menu"
-        >
-          delete
-        </div>
-      </FunctionContainer>
-    );
+    return '';
   };
 
   const getTime = res => {
