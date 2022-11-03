@@ -11,6 +11,7 @@ import * as Icons from '@stackoverflow/stacks-icons';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import jwt from 'jwt-decode';
 
 const NavContainer = styled.div`
   position: fixed;
@@ -71,8 +72,7 @@ function LoginedNav({ setLogin }) {
       });
   };
   const logined = localStorage.getItem('login-token');
-  const payload = logined.split('.')[1];
-  const { username } = JSON.parse(atob(payload));
+  const user = jwt(logined);
   return (
     <NavContainer className="bs-sm bt btw3 z-selected bc-orange-400">
       <nav className="d-flex ai-center jc-end fd-row">
@@ -127,7 +127,7 @@ function LoginedNav({ setLogin }) {
             >
               Log out
             </button>
-            <Email className="w128">{username}</Email>
+            <Email className="w128">{user.username}</Email>
           </UserDiv>
         </div>
       </nav>
