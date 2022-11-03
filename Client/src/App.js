@@ -19,7 +19,7 @@ function App() {
   const refresh = () => {
     axios
       .post(
-        `/members/refresh`,
+        `/api/members/refresh`,
         {},
         {
           headers: {
