@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import BoardList from './pages/BoardList';
 import BoardDetail from './pages/BoardDetail';
@@ -8,11 +8,50 @@ import SignUp from './pages/SignUp';
 import Nav from './components/Nav';
 import LoginedNav from './components/LoginedNav';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import axios from 'axios';
 
 const queryClient = new QueryClient();
 
 function App() {
   const [login, setLogin] = useState(localStorage.getItem('login-token'));
+  // const [initial, setInitial] = useState(false);
+
+  const refresh = () => {
+    axios
+      .post(
+        `/members/refresh`,
+        {},
+        {
+          headers: {
+            Refresh: `${localStorage.getItem('login-refresh')}`,
+          },
+        },
+      )
+      .then(res => {
+        if (res.headers.authorization) {
+          localStorage.setItem(
+            'login-token',
+            `Bearer ${res.headers.authorization}`,
+          );
+          setInterval(refresh, 5000);
+          // setInitial(true);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    if (login !== null) {
+      refresh();
+    }
+    // if (initial) {
+    //   refresh();
+    //   setInitial(false);
+    // }
+  }, [login]);
+
   return (
     <QueryClientProvider client={queryClient}>
       {login ? <LoginedNav setLogin={setLogin} /> : <Nav setLogin={setLogin} />}
