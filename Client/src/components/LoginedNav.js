@@ -57,7 +57,7 @@ function LoginedNav({ setLogin }) {
   const navigate = useNavigate();
   const logOutButton = () => {
     axios
-      .delete(`/members/logout`, {
+      .delete(`/api/members/logout`, {
         headers: { Refresh: `${localStorage.getItem('login-refresh')}` },
       })
       .then(() => {

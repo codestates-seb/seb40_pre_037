@@ -14,11 +14,11 @@ const WrapperBody = styled.div`
   margin: 0 auto;
 `;
 
-function LogIn({setLogin}) {
+function LogIn({ setLogin }) {
   return (
     <WrapperAll>
       <WrapperBody>
-        <LoginComponent setLogin={setLogin}/>
+        <LoginComponent setLogin={setLogin} />
       </WrapperBody>
     </WrapperAll>
   );

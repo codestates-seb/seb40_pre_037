@@ -288,8 +288,8 @@ function List() {
   };
 
   const { isInitialLoading } = useQuery(
-    ['post', curPage + '', sortBy + ''],
-    () => axios.get(`/post/${sortBy}?page=${curPage}&size=10`),
+    ['post', `${curPage}`, `${sortBy}`],
+    () => axios.get(`/api/post/${sortBy}?page=${curPage}&size=10`),
     {
       onSuccess: response => {
         setePosts(response.data.data);
@@ -383,40 +383,41 @@ function List() {
           </Section>
           <Section>
             <Ul>
-              {posts.map(post => (
-                <Li key={post.postId}>
-                  <SummaryLeft>
-                    <span>{`${post.likeCount} votes`}</span>
-                    <span>{`${post.answerCount ?? '0'} answers`}</span>
-                    <span>{`${post.viewCount} views`}</span>
-                  </SummaryLeft>
-                  <SummaryRight>
-                    <Link to={`/detail?postId=${post.postId}`}>
-                      <TitleArticle>{post.title}</TitleArticle>
-                    </Link>
-                    <p>
-                      {/* post.content.length > 120
+              {posts &&
+                posts.map(post => (
+                  <Li key={post.postId}>
+                    <SummaryLeft>
+                      <span>{`${post.likeCount} votes`}</span>
+                      <span>{`${post.answerCount && '0'} answers`}</span>
+                      <span>{`${post.viewCount} views`}</span>
+                    </SummaryLeft>
+                    <SummaryRight>
+                      <Link to={`/detail?postId=${post.postId}`}>
+                        <TitleArticle>{post.title}</TitleArticle>
+                      </Link>
+                      <p>
+                        {/* post.content.length > 120
                     ? `${post.content.split('').slice(0, 120).join('')}...`
           : post.content */}
-                      {post.body.replace(/(<([^>]+)>)/gi, '')}
-                    </p>
-                    <WrapperBot>
-                      <WrapperBtn>
-                        {post.tags.map(tag => (
-                          <BtnTag key={tag}>{tag}</BtnTag>
-                        ))}
-                      </WrapperBtn>
-                      <WrapperMeta>
-                        <Img src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1" />
-                        <Author>{post.memberName}</Author>
-                        <CreatedAt>{`asked ${howManyTimesAgo(
-                          post.createdAt,
-                        )}`}</CreatedAt>
-                      </WrapperMeta>
-                    </WrapperBot>
-                  </SummaryRight>
-                </Li>
-              ))}
+                        {post.body.replace(/(<([^>]+)>)/gi, '')}
+                      </p>
+                      <WrapperBot>
+                        <WrapperBtn>
+                          {post.tags.map(tag => (
+                            <BtnTag key={tag}>{tag}</BtnTag>
+                          ))}
+                        </WrapperBtn>
+                        <WrapperMeta>
+                          <Img src="https://www.gravatar.com/avatar/841736ed4d0f434dc144ae5399cd5d85?s=256&d=identicon&r=PG&f=1" />
+                          <Author>{post.memberName}</Author>
+                          <CreatedAt>{`asked ${howManyTimesAgo(
+                            post.createdAt,
+                          )}`}</CreatedAt>
+                        </WrapperMeta>
+                      </WrapperBot>
+                    </SummaryRight>
+                  </Li>
+                ))}
             </Ul>
             <Pagenation>
               <WrapperBtnPage>
