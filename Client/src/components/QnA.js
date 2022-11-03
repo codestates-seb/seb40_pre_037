@@ -171,7 +171,7 @@ export default function Details() {
         'ngrok-skip-browser-warning': '111',
       },
     };
-    return axios.get(`/post/${id}`, header).then(res => {
+    return axios.get(`/api/post/${id}`, header).then(res => {
       setPost(res.data);
       return res.data;
     });
@@ -183,7 +183,7 @@ export default function Details() {
         'ngrok-skip-browser-warning': '111',
       },
     };
-    return axios.get(`/answers/${id}`, header).then(res => {
+    return axios.get(`/api/answers/${id}`, header).then(res => {
       setAnswer(res.data);
       return res.data;
     });
@@ -198,7 +198,7 @@ export default function Details() {
     const header = {
       headers: { authorization: `${token}` },
     };
-    axios.post(`/post/like/up/${id}`, {}, header);
+    axios.post(`/api/post/like/up/${id}`, {}, header);
     setUpdate(true);
   };
 
@@ -206,7 +206,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.post(`/post/like/down/${id}`, {}, header);
+    axios.post(`/api/post/like/down/${id}`, {}, header);
     setUpdate(true);
   };
 
@@ -214,7 +214,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.post(`/answers/like/up/${id}`, {}, header);
+    axios.post(`/api/answers/like/up/${id}`, {}, header);
     setUpdate(true);
   };
 
@@ -222,7 +222,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.post(`/answers/like/down/${id}`, {}, header);
+    axios.post(`/api/answers/like/down/${id}`, {}, header);
     setUpdate(true);
   };
 
@@ -231,7 +231,11 @@ export default function Details() {
       headers: { authorization: token },
     };
     if (sendAnswer) {
-      axios.post(`/answers`, { postId: +detailId, answerBody: value }, header);
+      axios.post(
+        `/api/answers`,
+        { postId: +detailId, answerBody: value },
+        header,
+      );
       setUpdate(true);
     }
   };
@@ -240,7 +244,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.delete(`/post/${detailId}`, header);
+    axios.delete(`/api/post/${detailId}`, header);
     setUpdate(true);
     navigate('/');
   };
