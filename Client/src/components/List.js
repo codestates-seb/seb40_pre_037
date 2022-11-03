@@ -289,7 +289,7 @@ function List() {
 
   const { isInitialLoading } = useQuery(
     ['post', `${curPage}`, `${sortBy}`],
-    () => axios.get(`/api/post/${sortBy}?page=${curPage}&size=10`),
+    () => axios.get(`/post/${sortBy}?page=${curPage}&size=10`),
     {
       onSuccess: response => {
         setePosts(response.data.data);

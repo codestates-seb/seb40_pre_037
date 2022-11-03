@@ -78,7 +78,7 @@ function LoginComponent({ setLogin }) {
 
   const onSubmit = data => {
     axios
-      .post('/api/members/login', {
+      .post('/members/login', {
         username: data.email,
         password: data.password,
       })

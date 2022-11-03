@@ -145,7 +145,7 @@ function SignupComponent() {
 
   const onSubmit = data => {
     axios
-      .post('/api/members', {
+      .post('/members', {
         email: data.Email,
         name: data.name,
         password: data.password,

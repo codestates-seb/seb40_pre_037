@@ -204,7 +204,7 @@ function Ask() {
   useEffect(() => {
     if (detailId) {
       axios
-        .get(`/api/post/${detailId}`)
+        .get(`/post/${detailId}`)
         .then(res => {
           console.log(res.data);
           setTitleValue(res.data.title);
@@ -276,7 +276,7 @@ function Ask() {
       if (detailId) {
         axios
           .patch(
-            `/api/post/${detailId}`,
+            `/post/${detailId}`,
             {
               title: titleValue,
               body: value,
@@ -296,7 +296,7 @@ function Ask() {
       } else {
         axios
           .post(
-            '/api/post',
+            '/post',
             {
               title: titleValue,
               body: value,

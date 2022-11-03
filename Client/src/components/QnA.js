@@ -172,7 +172,7 @@ export default function Details() {
       },
     };
     return axios
-      .get(`/api/post/${id}`, header)
+      .get(`/post/${id}`, header)
       .then(res => {
         setPost(res.data);
         return res.data;
@@ -189,7 +189,7 @@ export default function Details() {
       },
     };
     return axios
-      .get(`/api/answers/${id}`, header)
+      .get(`/answers/${id}`, header)
       .then(res => {
         setAnswer(res.data);
         return res.data;
@@ -208,7 +208,7 @@ export default function Details() {
     const header = {
       headers: { authorization: `${token}` },
     };
-    axios.post(`/api/post/like/up/${id}`, {}, header).catch(error => {
+    axios.post(`/post/like/up/${id}`, {}, header).catch(error => {
       console.log(error);
     });
     setUpdate(true);
@@ -218,7 +218,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.post(`/api/post/like/down/${id}`, {}, header).catch(error => {
+    axios.post(`/post/like/down/${id}`, {}, header).catch(error => {
       console.log(error);
     });
     setUpdate(true);
@@ -228,7 +228,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.post(`/api/answers/like/up/${id}`, {}, header).catch(error => {
+    axios.post(`/answers/like/up/${id}`, {}, header).catch(error => {
       console.log(error);
     });
     setUpdate(true);
@@ -238,7 +238,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.post(`/api/answers/like/down/${id}`, {}, header).catch(error => {
+    axios.post(`/answers/like/down/${id}`, {}, header).catch(error => {
       console.log(error);
     });
     setUpdate(true);
@@ -250,7 +250,7 @@ export default function Details() {
     };
     if (sendAnswer) {
       axios
-        .post(`/api/answers`, { postId: +detailId, answerBody: value }, header)
+        .post(`/answers`, { postId: +detailId, answerBody: value }, header)
         .catch(error => {
           console.log(error);
         });
@@ -262,7 +262,7 @@ export default function Details() {
     const header = {
       headers: { authorization: token },
     };
-    axios.delete(`/api/post/${detailId}`, header).catch(e => console.log(e));
+    axios.delete(`/post/${detailId}`, header).catch(e => console.log(e));
     setUpdate(true);
     navigate('/');
   };
