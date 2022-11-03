@@ -55,7 +55,7 @@ function Nav() {
   return (
     <NavContainer className="bs-sm bt btw3 z-selected bc-orange-400">
       <nav className="d-flex ai-center jc-end fd-row">
-        <Link to="/">
+        <Link to="/?sortBy=present&page=1">
           <LogoDiv className="flex--item pb12 pt6 pl6 pr6">
             <svg
               aria-hidden="true"
@@ -121,4 +121,3 @@ function Nav() {
 }
 
 export default Nav;
-

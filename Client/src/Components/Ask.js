@@ -1,7 +1,7 @@
 /*
 책임개발자 : 최유정
 최초생성일 : 2022.10.26
-최근수정일 : 2022.11.2
+최근수정일 : 2022.11.3
 개요 :
 글작성 유효성 검사(유효하면 바로 작동이 될 수 있게 진행해보는중)
 현재상황 : 버튼을 누르면 유효성 검사 -> 유효성 검사를 통과 했을 때 타이틀은 바로 반응 (수정 필요)
@@ -9,8 +9,10 @@
         타이틀(5자 이상, 필수)
         바디(15자 이상 앞뒤 공백 제외)
         태그(1개 이상) -> 태그 작성 시의 태그 중복은 입력을 못하게 막아둠 
+patch : params 받아서 조건에 부합하면 patch로 api 분기
+상세페이지로 navigate시 에러 생기는 현상(post와 patch차이)이 있어서 메인페이지로 이동
 */
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { Editor } from '@toast-ui/react-editor';
@@ -196,7 +198,22 @@ function Ask() {
   const [validTitleTest, setValidTitleTest] = useState(true);
   const [validBodyTest, setValidBodyTest] = useState(true);
   const [validTagTest, setValidTagTest] = useState(true);
+  const urlParams = new URL(window.location.href).searchParams;
+  const detailId = urlParams.get('postId');
   const navigate = useNavigate();
+  useEffect(() => {
+    if (detailId) {
+      axios
+        .get(`/post/${detailId}`)
+        .then(res => {
+          console.log(res.data);
+          setTitleValue(res.data.title);
+          setTagItem(res.data.tags);
+          setValue(editorRef.current.getInstance().setHTML(res.data.body));
+        })
+        .catch(err => console.log(err));
+    }
+  }, []);
 
   const onChange = () => {
     const data = editorRef.current.getInstance().getHTML();
@@ -228,7 +245,7 @@ function Ask() {
   };
 
   const defaultValue = () => {
-    navigate('/detail');
+    navigate(`/?sortBy=present&page=1`);
   };
 
   const TagEnter = e => {
@@ -256,26 +273,48 @@ function Ask() {
       validValue.length >= 15 &&
       tagItem.length !== 0
     ) {
-      axios
-        .post(
-          '/post',
-          {
-            title: titleValue,
-            body: value,
-            tags: tagItem,
-          },
-          {
-            headers: {
-              Authorization: `${localStorage.getItem('login-token')}`,
+      if (detailId) {
+        axios
+          .patch(
+            `/post/${detailId}`,
+            {
+              title: titleValue,
+              body: value,
+              tags: tagItem,
             },
-          },
-        )
-        .then(res => {
-          console.log(res);
-        })
-        .then(res => console.log(res))
-        .then(defaultValue())
-        .catch(err => console.log(err));
+            {
+              headers: {
+                Authorization: `${localStorage.getItem('login-token')}`,
+              },
+            },
+          )
+          .then(res => {
+            console.log(res);
+          })
+          .then(defaultValue())
+          .catch(err => console.log(err));
+      } else {
+        axios
+          .post(
+            '/post',
+            {
+              title: titleValue,
+              body: value,
+              tags: tagItem,
+            },
+            {
+              headers: {
+                Authorization: `${localStorage.getItem('login-token')}`,
+              },
+            },
+          )
+          .then(res => {
+            console.log(res);
+          })
+          .then(res => console.log(res))
+          .then(defaultValue())
+          .catch(err => console.log(err));
+      }
     } else {
       console.log('유효성');
       console.log(titleValue, value, tagItem);
@@ -284,27 +323,6 @@ function Ask() {
       setValidTagTest(false);
     }
   };
-  //   axios
-  //     .post(
-  //       '/post',
-  //       {
-  //         title: titleValue,
-  //         body: value,
-  //         tags: tagItem,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `${localStorage.getItem('login-token')}`,
-  //         },
-  //       },
-  //     )
-  //     .then(res => {
-  //       console.log(res);
-  //     })
-  //     .then(res => console.log(res))
-  //     .then(defaultValue())
-  //     .catch(err => console.log(err));
-  // };
 
   return (
     <AskContainer>
